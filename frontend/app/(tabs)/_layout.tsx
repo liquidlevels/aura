@@ -1,7 +1,13 @@
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useSession } from "../ctx";
 
 export default function TabLayout() {
+  const { session } = useSession();
+
+  if (!session) {
+    return <Redirect href="/sign-in" />;
+  }
   return (
     <Tabs
       screenOptions={{
@@ -35,9 +41,7 @@ export default function TabLayout() {
           title: "Notificaciones",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
-              name={
-                focused ? "notifications" : "notifications-outline"
-              }
+              name={focused ? "notifications" : "notifications-outline"}
               color={color}
               size={24}
             />
@@ -50,9 +54,7 @@ export default function TabLayout() {
           title: "Ajustes",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
-              name={
-                focused ? "cog" : "cog-outline"
-              }
+              name={focused ? "cog" : "cog-outline"}
               color={color}
               size={24}
             />

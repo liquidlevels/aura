@@ -1,17 +1,19 @@
-import { Stack } from "expo-router";
+import { Slot, Stack } from "expo-router";
 import { setStatusBarStyle } from "expo-status-bar";
 import { useEffect } from "react";
+import { SessionProvider } from "./ctx";
 
 export default function RootLayout() {
   useEffect(() => {
-    setTimeout(() => {
-      setStatusBarStyle("dark");
-    }, 0);
+    setStatusBarStyle("dark");
   }, []);
 
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-    </Stack>
+    <SessionProvider>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Slot />
+      </Stack>
+    </SessionProvider>
   );
 }

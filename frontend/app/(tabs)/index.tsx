@@ -1,9 +1,16 @@
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Button } from "react-native";
+import { useSession } from "../ctx";
 
 export default function Index() {
+  const { user, signOut } = useSession();
+
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Inicio</Text>
+      <View>
+        <Text>Bienvenido, {user}</Text>
+        <Button title="sign out" onPress={() => signOut()} />
+      </View>
     </View>
   );
 }
