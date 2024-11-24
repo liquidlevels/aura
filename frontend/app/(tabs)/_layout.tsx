@@ -1,12 +1,12 @@
 import { Redirect, Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useSession } from "../ctx";
+import { useSession } from "../../ctx";
 
 export default function TabLayout() {
   const { session } = useSession();
 
   if (!session) {
-    return <Redirect href="/sign-in" />;
+    return <Redirect href="/auth" />;
   }
   return (
     <Tabs

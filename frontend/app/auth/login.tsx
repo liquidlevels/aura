@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSession } from "./ctx";
+import { useSession } from "../../ctx";
 import { router } from "expo-router";
 import {
   Button,
@@ -14,17 +14,17 @@ import {
 } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 
-export default function Signin() {
+export default function Login() {
   const { signIn } = useSession();
   const [username, setUsername] = useState("");
 
-  const handleSignIn = () => {
+  const handleLogin = () => {
     if (username.trim() === "") {
       Alert.alert("Error", "Por favor ingresa un nombre de usuario válido.");
       return;
     }
     signIn(username);
-    router.replace("/");
+    router.push("/auth/validation");
   };
 
   return (
@@ -32,10 +32,10 @@ export default function Signin() {
       <View style={styles.contenedor_image}>
         <Image
           style={styles.image_background}
-          source={require("../assets/images/Vector.png")}
+          source={require("../../assets/images/Vector.png")}
         />
         <Image
-          source={require("../assets/images/aura.png")}
+          source={require("../../assets/images/aura.png")}
           style={styles.image}
         />
       </View>
@@ -53,7 +53,7 @@ export default function Signin() {
         style={{ borderWidth: 1, padding: 10, marginBottom: 20, width: "80%" }}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleSignIn}>
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Ingresar</Text>
       </TouchableOpacity>
     </View>

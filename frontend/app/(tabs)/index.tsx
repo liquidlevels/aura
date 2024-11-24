@@ -1,5 +1,5 @@
 import { Text, View, StyleSheet, Button } from "react-native";
-import { useSession } from "../ctx";
+import { useSession } from "../../ctx";
 
 export default function Index() {
   const { user, signOut } = useSession();
