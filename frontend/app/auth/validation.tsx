@@ -1,20 +1,35 @@
 import { useState } from "react";
 import { useSession } from "../../ctx";
 import { router } from "expo-router";
-import { Button, TextInput, View, Alert } from "react-native";
+import { Button, TextInput, View, Alert, Platform } from "react-native";
 
 export default function Validation() {
-  const { signIn } = useSession(); // para completar la sesión
+  const { signIn } = useSession(); // para completar la sesion
   const [code, setCode] = useState("");
 
-  const handleValidation = () => {
-    //const { signIn } = useSession();
+  const handleValidation = async () => {
     if (code === "123456") {
-      // simula un codigo de verificación correcto
-      Alert.alert("Éxito", "Verificación completada.");
-      router.replace("/"); // redirige al flujo principal
+      try {
+        if (Platform.OS === "web") {
+          alert("Verificación completada.");
+        } else {
+          Alert.alert("Éxito", "Verificación completada.");
+        }
+
+        router.replace("/");
+      } catch (error) {
+        if (Platform.OS === "web") {
+          alert("Error en la verificación.");
+        } else {
+          Alert.alert("Error", "Hubo un problema al autenticar.");
+        }
+      }
     } else {
-      Alert.alert("Error", "Código incorrecto.");
+      if (Platform.OS === "web") {
+        alert("Código incorrecto.");
+      } else {
+        Alert.alert("Error", "Código incorrecto.");
+      }
     }
   };
 

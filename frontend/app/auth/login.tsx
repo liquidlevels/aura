@@ -11,6 +11,7 @@ import {
   Image,
   Touchable,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 
@@ -19,11 +20,21 @@ export default function Login() {
   const [username, setUsername] = useState("");
 
   const handleLogin = () => {
-    if (username.trim() === "") {
-      Alert.alert("Error", "Por favor ingresa un nombre de usuario válido.");
+    const sanitizedUsername = username.trim();
+
+    if (sanitizedUsername.length !== 10 || !/^\d+$/.test(sanitizedUsername)) {
+      if (Platform.OS === "web") {
+        alert("Por favor ingresa un número válido de 10 dígitos.");
+      } else {
+        Alert.alert(
+          "Error",
+          "Por favor ingresa un número válido de 10 dígitos."
+        );
+      }
       return;
     }
-    signIn(username);
+
+    signIn(sanitizedUsername);
     router.push("/auth/validation");
   };
 
@@ -50,6 +61,8 @@ export default function Login() {
         placeholder="*"
         value={username}
         onChangeText={setUsername}
+        keyboardType="phone-pad"
+        maxLength={10}
         style={{ borderWidth: 1, padding: 10, marginBottom: 20, width: "80%" }}
       />
 
