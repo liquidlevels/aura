@@ -5,15 +5,15 @@ import { Dimensions } from "react-native";
 
 const screenWidth = Dimensions.get("window").width;
 
-export default function History() {
+export default function Frecuencia() {
   // Datos de ejemplo 
   const data = {
-    labels: ["Lunes", "Martes", "Miércoles", "Sábado", "Domingo"],
+    labels: ["Lunes", "Martes", "Miércoles", "Sábado", "Domingo"], // Todas las etiquetas deben ser strings.
     datasets: [
       {
-        data: [75, 80, 76, 70, 78],
-        color: () => "#A03A8C", // Color de la línea
-        strokeWidth: 2,
+        data: [75, 80, 76, 70, 78], // Datos numéricos válidos.
+        color: () => "#A03A8C", // Color debe ser una función que devuelva un string.
+        strokeWidth: 2, // Valor numérico para el grosor de la línea.
       },
     ],
   };
@@ -35,10 +35,10 @@ export default function History() {
             backgroundColor: "#ffffff",
             backgroundGradientFrom: "#ffffff",
             backgroundGradientTo: "#ffffff",
-            color: () => "#A03A8C",
-            labelColor: () => "#333",
+            color: () => "#A03A8C", // Asegúrate de devolver un string.
+            labelColor: () => "#333", // Asegúrate de devolver un string.
             style: { borderRadius: 16 },
-            propsForDots: { r: "3", strokeWidth: "1", stroke: "#A03A8C" },
+            propsForDots: { r: "3", strokeWidth: "1", stroke: "#A03A8C" }, // Props con valores válidos como strings.
           }}
           bezier
           style={{ marginVertical: 8, borderRadius: 16 }}

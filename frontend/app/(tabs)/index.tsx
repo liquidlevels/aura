@@ -92,7 +92,7 @@ const App = () => {
 
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Saturación de oxígeno</Text>
-        <TouchableOpacity style={styles.arrowButton}onPress={() =>router.push("/(tabs)/saturacion")}>
+        <TouchableOpacity style={styles.arrowButton}onPress={() =>router.push("/saturacion")}>
           <Ionicons name="chevron-forward" size={24} color="#3498DB" />
         </TouchableOpacity>
         <Text style={styles.cardText}>🌳Saturación de oxígeno: {saturacion}%</Text>
@@ -100,7 +100,7 @@ const App = () => {
 
       <View style={styles.card}>
         <Text style={styles.cardTitle}>🩺Frecuencia cardiaca</Text>
-        <TouchableOpacity style={styles.arrowButton} onPress={() =>router.push("/(tabs)/hystory")}>
+        <TouchableOpacity style={styles.arrowButton} onPress={() =>router.push("/frecuencia")}>
           <Ionicons name="chevron-forward" size={24} color="#E74C3C" />
         </TouchableOpacity>
         <Text style={styles.cardText}>Frecuencia cardiaca: {frecuencia} ppm</Text>
