@@ -16,10 +16,7 @@ export default function RootLayout() {
         <Stack.Screen name="auth/index" options={{ headerShown: false }} />
         <Stack.Screen name="auth/login" options={{ title: "Iniciar Sesión" }} />
         <Stack.Screen name="auth/register" options={{ title: "Registro" }} />
-     
-        <Stack.Screen name="auth/frecuencia" options={{ title: 'Frecuencia' }} />
-        <Stack.Screen name="auth/saturacion" options={{ title: "Saturación" }} />
-
+    
         <Stack.Screen
           name="auth/validation"
           options={{ title: "Verificación" }}

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { LineChart } from 'react-native-svg-charts';
 import { Circle } from 'react-native-svg'; // Para los puntos en la línea
 
-const HeartRateScreen = () => {
+const Frecuencia= () => {
   // Datos de ejemplo para el gráfico de línea
   const [heartRateData, setHeartRateData] = useState([
     { day: 'Lunes', heartRate: 60 },
@@ -86,4 +86,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HeartRateScreen;
+export default Frecuencia;
