@@ -13,12 +13,12 @@ export default function InfoPacienteScreen() {
     name: 'María',
   });
 
-  const colorScheme = useColorScheme(); // Get the system's color scheme
+  const colorScheme = useColorScheme(); 
   const isDarkMode = colorScheme === 'dark';
 
   const pickerStyles = {
-    backgroundColor: isDarkMode ? '#333' : '#fff', // Background adapts to theme
-    color: isDarkMode ? '#fff' : '#000',          // Text color adapts to theme
+    backgroundColor: isDarkMode ? '#333' : '#fff',
+    color: isDarkMode ? '#fff' : '#000',   
   };
 
   const handleSave = () => {
@@ -68,7 +68,7 @@ export default function InfoPacienteScreen() {
               onValueChange={(value) =>
                 setPatientInfo((prev) => ({ ...prev, blood_type: value }))
               }
-              style={pickerStyles} // Use dynamic styles
+              style={pickerStyles}
             >
               {['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'].map((type) => (
                 <Picker.Item key={type} label={type} value={type} style={{ color: pickerStyles.color }} />
@@ -102,7 +102,7 @@ export default function InfoPacienteScreen() {
         </View>
 
         <View style={styles.buttonContainer}>
-          <Button title="Save Changes" onPress={handleSave} />
+          <Button title="Guardar cambios" onPress={handleSave} />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
