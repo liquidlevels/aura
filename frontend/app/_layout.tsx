@@ -1,5 +1,6 @@
 import { Slot, Stack } from "expo-router";
 import { setStatusBarStyle } from "expo-status-bar";
+import React from "react";
 import { useEffect } from "react";
 import { SessionProvider } from "../ctx";
 
