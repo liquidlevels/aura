@@ -66,7 +66,7 @@ export default function InfoPacienteScreen() {
   };
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.infoContainer}>
           <Text style={styles.infoText}>Nombre:</Text>
