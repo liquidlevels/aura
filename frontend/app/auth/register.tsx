@@ -132,10 +132,10 @@ export default function Register() {
           />
         </View>
       )}
-      <Text style={styles.tittle}>Registrate</Text>
+      <Text style={styles.title}>Registrate</Text>
       <View style={{ flexDirection: "row", width: "80%" }}>
-        <View style={styles.text_container_uno}>
-          <Text style={styles.nombre}>Nombre *</Text>
+        <View style={styles.text_container_one}>
+          <Text style={styles.name}>Nombre *</Text>
           <TextInput
             placeholder=""
             value={username}
@@ -150,8 +150,8 @@ export default function Register() {
             }}
           />
         </View>
-        <View style={styles.container_dos}>
-          <Text style={styles.apellido}>Apellido *</Text>
+        <View style={styles.container_two}>
+          <Text style={styles.lastname}>Apellido *</Text>
           <TextInput
             placeholder=""
             value={userLastName}
@@ -168,7 +168,7 @@ export default function Register() {
         </View>
       </View>
 
-      <Text style={styles.tittle_container}>Número de teléfono*</Text>
+      <Text style={styles.title_container}>Número de teléfono*</Text>
       <TextInput
         placeholder=""
         value={phoneNumber}
@@ -188,8 +188,10 @@ export default function Register() {
           style={styles.checkbox}
           onPress={() => setIsChecked(!isChecked)}
         >
-          {isChecked && <Text style={styles.checkmark}>✔</Text>}
-          <Text style={styles.leyenda_terminos}>
+          <View style={styles.checkboxContainer}>
+            {isChecked && <Text style={styles.checkmark}>✔</Text>}
+          </View>
+          <Text style={styles.terms_conditions}>
             He leido y acepto los terminos y condiciones
           </Text>
         </TouchableOpacity>
@@ -220,91 +222,86 @@ const styles = StyleSheet.create({
     height: "100%",
     top: "-25%",
   },
-  text_container_uno: {
+  text_container_one: {
     flexDirection: "column",
     justifyContent: "space-between",
-    width: "50%",
+    width: "48%",
     marginRight: "4%",
   },
-  container_dos: {
+  container_two: {
     flexDirection: "column",
     justifyContent: "space-between",
-    width: "50%",
+    width: "48%",
   },
-  contenedor_image: {
-    width: "100%",
-    height: 200,
-    justifyContent: "center",
-    alignItems: "center",
-    position: "relative",
-    marginBottom: 300,
-  },
+
   image_background: {
     width: "100%",
     height: "100%",
     resizeMode: "cover",
     position: "absolute",
+    marginTop: "-40%",
   },
   image: {
     position: "absolute",
     height: "55%",
     width: "70%",
-    marginTop: -150,
   },
 
-  tittle: {
+  title: {
     fontWeight: "bold",
     fontSize: 30,
     marginTop: "-11%",
     margin: 10,
     textAlign: "center",
   },
-  nombre: {
+  name: {
     width: "100%",
     fontSize: 20,
   },
-  apellido: {
+  lastname: {
     width: "100%",
     fontSize: 20,
   },
-  tittle_container: {
+  title_container: {
     margin: 10,
     width: "80%",
     borderColor: "grey",
     fontSize: 20,
   },
   container_check: {
-    flexDirection: "row",
-    marginTop: "1%",
+    marginVertical: 20,
     width: "80%",
   },
+  checkboxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   checkbox: {
-    width: 15,
-    height: 15,
+    width: 20,
+    height: 20,
     borderWidth: 1,
     borderRadius: 4,
-    alignItems: "flex-start",
+    alignItems: "center",
     marginRight: 10,
     flexDirection: "column",
+    justifyContent: "center",
   },
   checkmark: {
     fontWeight: "bold",
     fontSize: 14,
   },
-  leyenda_terminos: {
+  terms_conditions: {
     backgroundColor: "red",
     fontSize: 12,
-    flexDirection: "column",
-    justifyContent: "space-between",
   },
 
   button_register: {
     backgroundColor: "#61678B",
     width: "80%",
-    marginTop: "3%",
+    marginTop: "-1%",
     alignItems: "center",
     borderRadius: 10,
-    paddingVertical: 10,
+    paddingVertical: 4,
   },
   text_button: {
     color: "white",

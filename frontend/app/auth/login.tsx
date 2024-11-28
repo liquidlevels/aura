@@ -116,11 +116,11 @@ export default function Login() {
       )}
 
       <Text style={styles.login}>Iniciar sesión</Text>
-      <Text style={styles.leyenda}>
+      <Text style={styles.text}>
         Introduce tu número de teléfono con el que te haz registrado y te
         enviaremos un código para iniciar sesión.
       </Text>
-      <Text style={styles.subtittle}> Número telefónico*</Text>
+      <Text style={styles.subtitle}> Número telefónico*</Text>
       <TextInput
         placeholder=""
         value={username}
@@ -143,7 +143,7 @@ export default function Login() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: "center" },
-  subtittle: {
+  subtitle: {
     width: "80%",
     margin: 10,
     fontSize: 20,
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     margin: 10,
     textAlign: "center",
   },
-  leyenda: {
+  text: {
     fontSize: 15,
     textAlign: "center",
     margin: 10,
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     alignItems: "center",
     borderRadius: 10,
-    paddingVertical: 10,
+    paddingVertical: 4,
   },
   buttonText: {
     color: "white",
