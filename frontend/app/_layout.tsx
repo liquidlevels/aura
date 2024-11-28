@@ -2,7 +2,7 @@ import { Slot, Stack } from "expo-router";
 import { setStatusBarStyle } from "expo-status-bar";
 import { useEffect } from "react";
 import { SessionProvider } from "../ctx";
-import React = require("react");
+import React from "react";
 
 export default function RootLayout() {
   useEffect(() => {

@@ -2,7 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { useState } from "react";
 import { Text, View, StyleSheet, Switch } from "react-native";
-import React = require("react");
+import React from "react";
 
 export default function NotificacionesAjustesScreen() {
   const [heartRate, setHeartRate] = useState(false);

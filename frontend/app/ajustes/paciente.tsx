@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useEffect, useState } from "react";
-import React = require("react");
+import React from "react";
 
 // Define types for the patient's information
 type PatientInfo = {

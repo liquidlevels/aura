@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   Platform,
 } from "react-native";
-import React = require("react");
+import React from "react";
 
 export default function Validation() {
   const { signIn } = useSession(); // para completar la sesion

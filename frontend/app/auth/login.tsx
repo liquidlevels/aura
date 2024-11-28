@@ -13,7 +13,7 @@ import {
   Platform,
 } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
-import React = require("react");
+import React from "react";
 
 export default function Login() {
   const { signIn } = useSession();

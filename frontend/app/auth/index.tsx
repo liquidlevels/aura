@@ -7,7 +7,7 @@ import {
   Dimensions,
 } from "react-native";
 import { router } from "expo-router";
-import React = require("react");
+import React from "react";
 
 const { width } = Dimensions.get("window");
 
