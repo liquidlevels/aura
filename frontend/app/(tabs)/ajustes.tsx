@@ -1,9 +1,11 @@
 import * as React from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
-import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, Button } from "react-native";
+import { useSession } from "@/ctx";
 
 export default function AjustesScreen() {
+  const { user, signOut } = useSession();
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -38,6 +40,12 @@ export default function AjustesScreen() {
         <Text style={styles.text}> Video en vivo</Text>
         <Ionicons name="chevron-forward" size={24} />
       </TouchableOpacity>
+
+      <View>
+        <Text>Usuario {user} </Text>
+        <Text>Cerrar sesion</Text>
+        <Button title="sign out" onPress={() => signOut()} />
+      </View>
     </View>
   );
 }
