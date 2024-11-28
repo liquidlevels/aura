@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { SessionProvider } from "../ctx";
 import React from "react";
 
-
 export default function RootLayout() {
   useEffect(() => {
     setStatusBarStyle("dark");
@@ -17,18 +16,12 @@ export default function RootLayout() {
         <Stack.Screen name="auth/index" options={{ headerShown: false }} />
         <Stack.Screen name="auth/login" options={{ title: "Iniciar Sesión" }} />
         <Stack.Screen name="auth/register" options={{ title: "Registro" }} />
-    
+
         <Stack.Screen
           name="auth/validation"
           options={{ title: "Verificación" }}
         />
 
-        <Stack.Screen
-          name="ajustes"
-          options={{
-            title: "Ajustes",
-          }}
-        />
         <Stack.Screen
           name="ajustes/usuario"
           options={{

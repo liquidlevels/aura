@@ -20,11 +20,12 @@ export default function Login() {
   const { signIn } = useSession();
   const [username, setUsername] = useState("");
   const [userLastName, setUserLastName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   const handleLogin = () => {
-    const sanitizedUsername = username.trim();
+    const sanitizedPhone = phoneNumber.trim();
 
-    if (sanitizedUsername.length !== 10 || !/^\d+$/.test(sanitizedUsername)) {
+    if (sanitizedPhone.length !== 10 || !/^\d+$/.test(sanitizedPhone)) {
       if (Platform.OS === "web") {
         alert("Por favor ingresa un número válido de 10 dígitos.");
       } else {
@@ -36,12 +37,13 @@ export default function Login() {
       return;
     }
 
-    signIn(username, userLastName);
+    /*signIn(username, userLastName, phoneNumber);
     if (username.trim() === "" && userLastName.trim() === "") {
       Alert.alert("Error", "Por favor ingresa un nombre de usuario válido.");
       return;
-    }
-    signIn(username, userLastName);
+    }*/
+
+    signIn(username, userLastName, phoneNumber);
     router.push("/auth/validation");
   };
 
@@ -56,8 +58,9 @@ export default function Login() {
       <Text style={styles.subtittle}> Número telefónico*</Text>
       <TextInput
         placeholder=""
-        value={username}
-        onChangeText={setUsername}
+        value={phoneNumber}
+        onChangeText={setPhoneNumber}
+        keyboardType="phone-pad"
         style={{
           borderWidth: 1,
           padding: 10,
