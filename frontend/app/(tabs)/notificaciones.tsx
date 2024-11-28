@@ -1,15 +1,15 @@
-import React from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import * as React from "react";
+import { View, Text, StyleSheet } from "react-native";
 
 const NotificationsPage = () => {
   return (
     <View style={styles.container}>
-        <Text style={styles.text}>Notificaciones con RAFC</Text>
+      <Text style={styles.text}>Notificaciones con RAFC</Text>
     </View>
-  )
-}
+  );
+};
 
-export default NotificationsPage
+export default NotificationsPage;
 
 const styles = StyleSheet.create({
   container: {

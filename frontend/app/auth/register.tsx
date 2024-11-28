@@ -1,8 +1,5 @@
 import { useState } from "react";
 import { router } from "expo-router";
-<<<<<<< HEAD
-import { Button, TextInput, View, Alert, Platform } from "react-native";
-=======
 import {
   TextInput,
   View,
@@ -12,14 +9,13 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
+  Platform,
 } from "react-native";
->>>>>>> fatima
 import { sendVerificationCode } from "../../utils/sendVerificationCode";
 import { useSession } from "@/ctx";
 import { fakeRegisterApi } from "@/utils/fakeRegisterApi";
-import React from "react";
+import * as React from "react";
 import { CheckBox } from "react-native-elements";
-import { Platform } from "react-native";
 
 const { width } = Dimensions.get("window");
 
@@ -31,7 +27,6 @@ export default function Register() {
   const { signIn } = useSession();
 
   const handleRegister = async () => {
-<<<<<<< HEAD
     const cleanedUsername = username.trim().replace(/\s+/g, " ");
 
     if (!cleanedUsername) {
@@ -52,26 +47,21 @@ export default function Register() {
           "El número de teléfono debe ser un número válido de 10 dígitos."
         );
       }
-=======
-    //console.log(sendVerificationCode);
-    if (!phoneNumber || !username || !userLastName) {
-      Alert.alert("Error", "Los campos no pueden estar vacíos");
->>>>>>> fatima
-      return;
     }
+    //console.log(sendVerificationCode);
+    /*if (!phoneNumber || !username || !userLastName) {
+      Alert.alert("Error", "Los campos no pueden estar vacíos");
+      return;
+    }*/
 
     try {
-<<<<<<< HEAD
-      await fakeRegisterApi({ phoneNumber, username: cleanedUsername }); // API para registrar al usuario (temporal)
+      await fakeRegisterApi({
+        phoneNumber,
+        username: cleanedUsername,
+        userLastName,
+      }); // API para registrar al usuario (temporal)
 
-      await signIn(cleanedUsername);
-=======
-      // Simula el registro y la creacion del usuario
-      await fakeRegisterApi({ phoneNumber, username, userLastName }); // API para registrar al usuario(temporal)
-
-      // Autentica al usuario despues de registrarlo
-      signIn(username, userLastName);
->>>>>>> fatima
+      await signIn(cleanedUsername, userLastName);
 
       router.push("/auth/validation");
     } catch (error) {
@@ -214,10 +204,6 @@ export default function Register() {
         value={phoneNumber}
         onChangeText={setPhoneNumber}
         keyboardType="phone-pad"
-<<<<<<< HEAD
-        maxLength={10}
-        style={{ borderWidth: 1, padding: 10, marginBottom: 20, width: "80%" }}
-=======
         style={{
           borderWidth: 1,
           padding: 10,
@@ -226,7 +212,6 @@ export default function Register() {
           borderRadius: 8,
           borderColor: "#adb5bd",
         }}
->>>>>>> fatima
       />
       <View style={styles.container_check}>
         <TouchableOpacity

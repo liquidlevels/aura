@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { useSession } from "../../ctx";
 import { router } from "expo-router";
-<<<<<<< HEAD
-import { Button, TextInput, View, Alert, Platform } from "react-native";
-=======
 import {
   Button,
   TextInput,
@@ -12,9 +9,9 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  Platform,
 } from "react-native";
-import React from "react";
->>>>>>> fatima
+import React = require("react");
 
 export default function Validation() {
   const { signIn } = useSession(); // para completar la sesion

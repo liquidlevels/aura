@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { Text, View, StyleSheet, Button } from "react-native";
 import { useSession } from "../../ctx";
 
