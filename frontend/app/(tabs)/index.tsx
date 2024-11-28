@@ -1,35 +1,16 @@
-// import { Text, View, StyleSheet, Button } from "react-native";
-// import { useSession } from "../../ctx";
-
-// export default function Index() {
-//   const { user, signOut } = useSession();
-
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.text}>Inicio</Text>
-//       <View>
-//         <Text>Bienvenido, {user}</Text>
-//         <Button title="sign out" onPress={() => signOut()} />
-//       </View>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: "#D9D9D9",
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   text: {
-//     color: "#000",
-//   },
-// });
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
-import { useSession } from '../../ctx'; 
-
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import { useSession } from '../../ctx';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
@@ -38,107 +19,139 @@ interface Nota {
   fecha: string;
 }
 
-const App = () => {
-  const { user, signOut } = useSession(); // Obtén el usuario y la función signOut del contexto
+const Inicio = () => {
+  const { user } = useSession();
   const [nota, setNota] = useState('');
-  const [notas, setNotas] = useState<Nota[]>([]); 
-  
-  const [mostrarNota, setMostrarNota] = useState(false);
+  const [notas, setNotas] = useState<Nota[]>([]);
 
-  const [saturacion, setSaturacion] = useState(Math.floor(Math.random() * (100 - 90 + 1)) + 90);
-  const [frecuencia, setFrecuencia] = useState(Math.floor(Math.random() * (100 - 60 + 1)) + 60);
+  const [saturacion, setSaturacion] = useState(
+    Math.floor(Math.random() * (100 - 90 + 1)) + 90
+  );
+  const [frecuencia, setFrecuencia] = useState(
+    Math.floor(Math.random() * (100 - 60 + 1)) + 60
+  );
 
- 
   useEffect(() => {
     const interval = setInterval(() => {
       setSaturacion(Math.floor(Math.random() * (100 - 90 + 1)) + 90);
       setFrecuencia(Math.floor(Math.random() * (100 - 60 + 1)) + 60);
-    }, 5000); // Actualiza cada 5 segundos
+    }, 5000);
 
-    return () => clearInterval(interval); // Limpiar el intervalo cuando se desmonte el componente
+    return () => clearInterval(interval);
   }, []);
 
   const agregarNota = () => {
     if (nota.trim() !== '') {
-      setNotas([...notas, { nota, fecha: new Date().toLocaleString() }]);
+      setNotas([{ nota, fecha: new Date().toLocaleString() }, ...notas]);
       setNota('');
-      setMostrarNota(false);
     } else {
-      alert("Por favor ingresa una nota válida.");
+      alert('Por favor ingresa una nota válida.');
     }
   };
 
+  const renderNota = ({ item }: { item: Nota }) => (
+    <View style={styles.note}>
+      <Text style={styles.noteText}>{item.nota}</Text>
+      <Text style={styles.noteDate}>{item.fecha}</Text>
+    </View>
+  );
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Bienvenido, {user} ✌</Text>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={80} // Ajusta según el diseño
+    >
+      <FlatList
+        data={notas}
+        keyExtractor={(item, index) => index.toString()}
+        ListHeaderComponent={
+          <>
+            <Text style={styles.title}>Bienvenido, {user} ✌</Text>
 
-    
-      <View style={styles.iconContainer}>
-        <Ionicons name="videocam" size={30} color="#FF6347" />
-        <Text style={styles.iconText}>Video en vivo</Text>
-      </View>
-      
-         <View style={styles.infoContainer}>
-        <View style={styles.infoItem}>
-          <Ionicons name="thermometer" size={30} color="#3498DB" />
-          <Text style={styles.infoText}>Temperatura: 22°C</Text>
-        </View>
-        <View style={styles.infoItem}>
-          <Ionicons name="water" size={30} color="#1ABC9C" />
-          <Text style={styles.infoText}>Humedad: 60%</Text>
-        </View>
-      </View>
+            {/* Información de video */}
+            <View style={styles.iconContainer}>
+              <Ionicons name="videocam" size={30} color="#FF6347" />
+              <Text style={styles.iconText}>Video en vivo</Text>
+            </View>
 
+            {/* Información de temperatura y humedad */}
+            <View style={styles.infoContainer}>
+              <View style={styles.infoItem}>
+                <Ionicons name="thermometer" size={30} color="#3498DB" />
+                <Text style={styles.infoText}>Temperatura: 22°C</Text>
+              </View>
+              <View style={styles.infoItem}>
+                <Ionicons name="water" size={30} color="#1ABC9C" />
+                <Text style={styles.infoText}>Humedad: 60%</Text>
+              </View>
+            </View>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Saturación de oxígeno</Text>
-        <TouchableOpacity style={styles.arrowButton}onPress={() =>router.push("/saturacion")}>
-          <Ionicons name="chevron-forward" size={24} color="#3498DB" />
-        </TouchableOpacity>
-        <Text style={styles.cardText}>🌳Saturación de oxígeno: {saturacion}%</Text>
-      </View>
+            {/* Tarjetas de saturación y frecuencia */}
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() => router.push('/saturacion')}
+            >
+              <Text style={styles.cardTitle}>Saturación de oxígeno</Text>
+              <Ionicons
+                name="chevron-forward"
+                size={24}
+                color="#3498DB"
+                style={styles.arrowIcon}
+              />
+              <Text style={styles.cardText}>
+                🌳 Saturación de oxígeno: {saturacion}%
+              </Text>
+            </TouchableOpacity>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>🩺Frecuencia cardiaca</Text>
-        <TouchableOpacity style={styles.arrowButton} onPress={() =>router.push("/frecuencia")}>
-          <Ionicons name="chevron-forward" size={24} color="#E74C3C" />
-        </TouchableOpacity>
-        <Text style={styles.cardText}>Frecuencia cardiaca: {frecuencia} ppm</Text>
-      </View>
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() => router.push('/frecuencia')}
+            >
+              <Text style={styles.cardTitle}>🩺 Frecuencia cardiaca</Text>
+              <Ionicons
+                name="chevron-forward"
+                size={24}
+                color="#E74C3C"
+                style={styles.arrowIcon}
+              />
+              <Text style={styles.cardText}>
+                Frecuencia cardiaca: {frecuencia} ppm
+              </Text>
+            </TouchableOpacity>
 
-     
-      <View style={styles.notesContainer}>
-        <Text style={styles.subtitle}>Agregar Nota ✍</Text>
-        {notas.map((nota, index) => (
-          <View key={index} style={styles.note}>
-            <Text style={styles.noteText}>{nota.nota}</Text>
-            <Text style={styles.noteDate}>{nota.fecha}</Text>
-          </View>
-        ))}
-
-        {mostrarNota ? (
-          <View style={styles.inputContainer}>
-            <TextInput
-              value={nota}
-              onChangeText={setNota}
-              style={styles.input}
-              placeholder="Escribe tu nota"
-              placeholderTextColor="#B0BEC5"
-            />
-            <Button title="Agregar nota" onPress={agregarNota} color="#C8A8EB" />
-          </View>
-        ) : (
-          <Button title="Agregar nota" onPress={() => setMostrarNota(true)} color="#C8A8EB" />
-        )}
-      </View>
-    </ScrollView>
+            {/* Campo para agregar nota */}
+            <View style={styles.notesContainer}>
+              <Text style={styles.subtitle}>Agregar Nota ✍</Text>
+              <View style={styles.inputContainer}>
+                <TextInput
+                  value={nota}
+                  onChangeText={setNota}
+                  style={styles.input}
+                  placeholder="Escribe tu nota"
+                  placeholderTextColor="#B0BEC5"
+                />
+                <Button
+                  title="Agregar nota"
+                  onPress={agregarNota}
+                  color="#61678B"
+                />
+              </View>
+            </View>
+          </>
+        }
+        renderItem={renderNota}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>No hay notas aún.</Text>
+        }
+      />
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#F5F5F5',
   },
   title: {
@@ -155,11 +168,6 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom: 20,
     borderRadius: 10,
-    shadowColor: '#BDC3C7',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
   },
   iconText: {
     fontSize: 18,
@@ -185,20 +193,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     marginBottom: 20,
-    shadowColor: '#BDC3C7',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
   },
   cardTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#2C3E50',
     marginBottom: 10,
-    flex: 1,
   },
-  arrowButton: {
+  arrowIcon: {
     position: 'absolute',
     top: 10,
     right: 10,
@@ -212,11 +214,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 10,
     padding: 20,
-    shadowColor: '#BDC3C7',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
   },
   subtitle: {
     fontSize: 18,
@@ -224,30 +221,10 @@ const styles = StyleSheet.create({
     color: '#34495E',
     marginBottom: 15,
   },
-  note: {
-    backgroundColor: '#ECF0F1',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 12,
-    shadowColor: '#BDC3C7',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  noteText: {
-    fontSize: 16,
-    color: '#2C3E50',
-  },
-  noteDate: {
-    fontSize: 12,
-    color: '#95A5A6',
-    marginTop: 6,
-  },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 15,
+    marginBottom: 15,
   },
   input: {
     flex: 1,
@@ -258,6 +235,27 @@ const styles = StyleSheet.create({
     marginRight: 10,
     backgroundColor: '#F5F5F5',
   },
+  note: {
+    backgroundColor: '#ECF0F1',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  noteText: {
+    fontSize: 16,
+    color: '#2C3E50',
+  },
+  noteDate: {
+    fontSize: 12,
+    color: '#95A5A6',
+    marginTop: 6,
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: '#7F8C8D',
+    fontStyle: 'italic',
+    marginTop: 20,
+  },
 });
 
-export default App;
+export default Inicio;
