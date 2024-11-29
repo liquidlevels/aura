@@ -110,6 +110,8 @@ const Notificaciones = () => {
   );
 };
 
+export default Notificaciones;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -149,5 +151,3 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
   },
 });
-
-export default Notificaciones;
