@@ -9,13 +9,13 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
+  Platform,
 } from "react-native";
 import { sendVerificationCode } from "../../utils/sendVerificationCode";
 import { useSession } from "@/ctx";
 import { fakeRegisterApi } from "@/utils/fakeRegisterApi";
-import React from "react";
+import * as React from "react";
 import { CheckBox } from "react-native-elements";
-import { Platform } from "react-native";
 
 const { width } = Dimensions.get("window");
 
@@ -27,23 +27,53 @@ export default function Register() {
   const { signIn } = useSession();
 
   const handleRegister = async () => {
-    //console.log(sendVerificationCode);
-    if (!phoneNumber || !username || !userLastName) {
-      Alert.alert("Error", "Los campos no pueden estar vacíos");
+    const cleanedUsername = username.trim().replace(/\s+/g, " ");
+
+    if (!cleanedUsername) {
+      if (Platform.OS === "web") {
+        alert("El nombre de usuario no puede estar vacío.");
+      } else {
+        Alert.alert("Error", "El nombre de usuario no puede estar vacío.");
+      }
       return;
     }
 
+    if (!/^\d{10}$/.test(phoneNumber)) {
+      if (Platform.OS === "web") {
+        alert("El número de teléfono debe ser un número válido de 10 dígitos.");
+      } else {
+        Alert.alert(
+          "Error",
+          "El número de teléfono debe ser un número válido de 10 dígitos."
+        );
+      }
+    }
+    //console.log(sendVerificationCode);
+    /*if (!phoneNumber || !username || !userLastName) {
+      Alert.alert("Error", "Los campos no pueden estar vacíos");
+      return;
+    }*/
+
     try {
-      // Simula el registro y la creacion del usuario
-      await fakeRegisterApi({ phoneNumber, username, userLastName }); // API para registrar al usuario(temporal)
+      await fakeRegisterApi({
+        phoneNumber,
+        username: cleanedUsername,
+        userLastName,
+      }); // API para registrar al usuario (temporal)
 
-      // Autentica al usuario despues de registrarlo
-      signIn(username, userLastName);
+      await signIn(cleanedUsername, userLastName);
 
-      // Navega a la validacion
       router.push("/auth/validation");
     } catch (error) {
       console.error("Error en el registro:", error);
+      if (Platform.OS === "web") {
+        alert("Hubo un problema al registrarte. Por favor, intenta de nuevo.");
+      } else {
+        Alert.alert(
+          "Error",
+          "Hubo un problema al registrarte. Por favor, intenta de nuevo."
+        );
+      }
     }
   };
 

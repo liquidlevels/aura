@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
+import * as React from "react";
 
 interface SessionContextProps {
   session: boolean;

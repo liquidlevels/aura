@@ -1,7 +1,7 @@
 import { Redirect, Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSession } from "../../ctx";
-import React from "react";
+import * as React from "react";
 
 export default function TabLayout() {
   const { session } = useSession();

@@ -21,6 +21,21 @@ export default function Login() {
   const [userLastName, setUserLastName] = useState("");
 
   const handleLogin = () => {
+    const sanitizedUsername = username.trim();
+
+    if (sanitizedUsername.length !== 10 || !/^\d+$/.test(sanitizedUsername)) {
+      if (Platform.OS === "web") {
+        alert("Por favor ingresa un número válido de 10 dígitos.");
+      } else {
+        Alert.alert(
+          "Error",
+          "Por favor ingresa un número válido de 10 dígitos."
+        );
+      }
+      return;
+    }
+
+    signIn(username, userLastName);
     if (username.trim() === "" && userLastName.trim() === "") {
       Alert.alert("Error", "Por favor ingresa un nombre de usuario válido.");
       return;
