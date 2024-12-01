@@ -23,6 +23,7 @@ interface Nota {
 }
 
 const Inicio = () => {
+  const { user } = useSession();
   const [nota, setNota] = useState('');
   const [notas, setNotas] = useState<Nota[]>([]);
   const [saturacion, setSaturacion] = useState(
@@ -123,26 +124,27 @@ const Inicio = () => {
         keyExtractor={(item, index) => index.toString()}
         ListHeaderComponent={
           <>
-            <Text style={styles.title}>Bienvenido ✌</Text>
+            <Text style={styles.title}>Bienvenido, {user} ✌</Text>
+
 
             {/* Información de video */}
             <TouchableOpacity
               style={styles.iconContainer}
               onPress={() => router.push('/video/videoStream')}
             >
-              <Ionicons name="videocam" size={30} color="#FF6347" />
+              <Ionicons name="videocam" size={30} color="#61678B" />
               <Text style={styles.iconText}>Video en vivo</Text>
             </TouchableOpacity>
 
             {/* Información de temperatura y humedad */}
             <View style={styles.infoContainer}>
               <View style={styles.infoItem}>
-                <Ionicons name="thermometer" size={30} color="#3498DB" />
-                <Text style={styles.infoText}>Temperatura: 22°C</Text>
+                <Ionicons name="thermometer" size={40} color="#61678B" />
+                <Text style={styles.infoText}>Temperatura: 22°C   </Text>
               </View>
               <View style={styles.infoItem}>
-                <Ionicons name="water" size={30} color="#1ABC9C" />
-                <Text style={styles.infoText}>Humedad: 60%</Text>
+                <Ionicons name="water" size={40} color="#61678B" />
+                <Text style={styles.infoText}>Humedad: 60% </Text>
               </View>
             </View>
 
@@ -155,7 +157,7 @@ const Inicio = () => {
               <Ionicons
                 name="chevron-forward"
                 size={24}
-                color="#3498DB"
+                color=""
                 style={styles.arrowIcon}
               />
               <Text style={styles.cardText}>
@@ -171,7 +173,7 @@ const Inicio = () => {
               <Ionicons
                 name="chevron-forward"
                 size={24}
-                color="#E74C3C"
+                color="#61678B"
                 style={styles.arrowIcon}
               />
               <Text style={styles.cardText}>
@@ -223,7 +225,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#E8F8F5',
+    backgroundColor: '#D2F0F8',
     padding: 15,
     marginBottom: 20,
     borderRadius: 10,
@@ -241,14 +243,15 @@ const styles = StyleSheet.create({
   infoItem: {
     flexDirection: 'row',
     alignItems: 'center',
+ 
   },
   infoText: {
     fontSize: 16,
-    color: '#7F8C8D',
+    
     marginLeft: 10,
   },
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#E9E9FA',
     borderRadius: 10,
     padding: 20,
     marginBottom: 20,
@@ -284,6 +287,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15,
+    
   },
   input: {
     flex: 1,
@@ -295,7 +299,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   note: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F4E1FD',
     borderRadius: 10,
     padding: 15,
     marginBottom: 10,
