@@ -128,8 +128,7 @@ const Inicio = () => {
 
 
             {/* Información de video */}
-            <TouchableOpacity
-              style={styles.iconContainer}
+            <TouchableOpacity style={styles.iconContainer}
               onPress={() => router.push('/video/videoStream')}
             >
               <Ionicons name="videocam" size={30} color="#61678B" />

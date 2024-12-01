@@ -86,36 +86,34 @@ const FrequencyScreen = () => {
   };
 
   return (
-   
-      <ScrollView style={styles.container}><
-        View style={styles.viewControls}>
-          <TouchableOpacity
-            style={[styles.viewButton, view === 'day' && styles.activeViewButton]}
-            onPress={() => handleChangeView('day')}
-          >
-            <Text style={styles.viewButtonText}>Por Día</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.viewButton, view === 'week' && styles.activeViewButton]}
-            onPress={() => handleChangeView('week')}
-          >
-            <Text style={styles.viewButtonText}>Por Semana</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.viewButton, view === 'month' && styles.activeViewButton]}
-            onPress={() => handleChangeView('month')}
-          >
-            <Text style={styles.viewButtonText}>Por Mes</Text>
-          </TouchableOpacity>
-        </View>
-        
- 
+    <ScrollView style={styles.container}>
+      <View style={styles.viewControls}>
+        <TouchableOpacity
+          style={[styles.viewButton, view === 'day' && styles.activeViewButton]}
+          onPress={() => handleChangeView('day')}
+        >
+          <Text style={styles.viewButtonText}>Por Día</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.viewButton, view === 'week' && styles.activeViewButton]}
+          onPress={() => handleChangeView('week')}
+        >
+          <Text style={styles.viewButtonText}>Por Semana</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.viewButton, view === 'month' && styles.activeViewButton]}
+          onPress={() => handleChangeView('month')}
+        >
+          <Text style={styles.viewButtonText}>Por Mes</Text>
+        </TouchableOpacity>
+      </View>
+
       <Text style={[styles.normalFrequency, { textAlign: 'left', paddingLeft: 10 }]}>
         {isNormalFrequency(averageFrequency) ? 'Frecuencia Normal' : 'Frecuencia Anormal'}
       </Text>
-      
+
       <Text style={[styles.date, { textAlign: 'left', paddingLeft: 10 }]}>{date}</Text>
-      
+
       <Text style={[styles.subHeader, { textAlign: 'left', paddingLeft: 10 }]}>
         Promedio de frecuencia: {averageFrequency} bpm
       </Text>
@@ -138,6 +136,10 @@ const FrequencyScreen = () => {
 
       <Text style={styles.notesTitle}>Tabla de Frecuencia Cardiaca</Text>
       <View style={styles.table}>
+        <View style={styles.tableRowHeader}>
+          <Text style={styles.tableHeader}>Hora</Text>
+          <Text style={styles.tableHeader}>Frecuencia</Text>
+        </View>
         {data.map((item, index) => (
           <View key={index} style={styles.tableRow}>
             <Text style={styles.tableCell}>{item.label}</Text>
@@ -180,62 +182,76 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
   },
-  
   viewControls: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   viewButton: {
-   
-      margin: 10,
-      backgroundColor: '#61678B',
-      paddingVertical: 10,
-      paddingHorizontal: 20,
-      borderRadius: 10,
-    
+    flex: 1,
+    padding: 10,
+    backgroundColor: "#61678B",
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 5,
+    borderRadius: 5,
   },
-
+  activeViewButton: {
+    backgroundColor: '#8A2BE2',
+  },
+  viewButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
   chart: {
     marginVertical: 10,
   },
   table: {
     marginBottom: 20,
   },
-  viewButtonText: {
-    fontSize: 14,
-    color: '#fff',
+  tableRowHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 5,
+    
+    backgroundColor: '#61678B',
+    paddingVertical: 5,
+  },
+  tableHeader: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+    flex: 1,
+    textAlign: 'center',
   },
   tableRow: {
     flexDirection: 'row',
-    padding: 5,
-  },
-  tableHeader: {
-    flex: 1,
-    fontWeight: 'bold',
-    fontSize: 14,
+    justifyContent: 'space-between',
+    marginVertical: 5,
+    paddingVertical: 5,
   },
   tableCell: {
-    flex: 1,
-    fontSize: 14,
-  },
-  description: {
     fontSize: 16,
-    marginBottom: 20,
     color: '#333',
+    flex: 1,
+    textAlign: 'center',
   },
   notesTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 20,
+    marginVertical: 10,
   },
-  activeViewButton: {
-    backgroundColor: '#8A2BE2',
+  description: {
+    fontSize: 14,
+    textAlign: 'justify',
+    marginVertical: 10,
+    color: 'gray',
   },
   noNotes: {
-    fontSize: 16,
+    fontSize: 14,
     color: 'gray',
+    textAlign: 'center',
   },
 });
 
 export default FrequencyScreen;
+
