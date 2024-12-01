@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
   },
   tableRowHeader: {
     flexDirection: 'row',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#61678B',
     padding: 10,
   },
   tableHeader: {
@@ -278,6 +278,7 @@ const styles = StyleSheet.create({
   tableCell: {
     flex: 1,
     textAlign: 'center',
+    color: '#333',
   },
   description: {
     fontSize: 16,
