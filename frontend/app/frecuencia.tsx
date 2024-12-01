@@ -48,13 +48,14 @@ const FrequencyScreen = () => {
   const [view, setView] = useState<'day' | 'week' | 'month'>('day');
   const [averageFrequency, setAverageFrequency] = useState(0);
   const [date, setDate] = useState(moment().format('dddd, D [de] MMMM [de] YYYY'));
+  const [range, setRange] = useState(3); // Rango visible de puntos
+  const [zoomLevel, setZoomLevel] = useState(1); // Controla el zoom de la gráfica
 
   useEffect(() => {
     const totalFrequency = data.reduce((sum, { frequency }) => sum + frequency, 0);
     const average = totalFrequency / data.length;
     setAverageFrequency(parseFloat(average.toFixed(2)));
 
-    // Actualiza la fecha al cambiar la vista
     setDate(moment().format('dddd, D [de] MMMM [de] YYYY'));
   }, [data]);
 
@@ -69,18 +70,29 @@ const FrequencyScreen = () => {
     }
   };
 
+  const handleZoomIn = () => {
+    if (zoomLevel < 2) {
+      setZoomLevel(zoomLevel + 0.5); // Aumenta el zoom
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (zoomLevel > 1) {
+      setZoomLevel(zoomLevel - 0.5); // Disminuye el zoom
+    }
+  };
+
   const isNormalFrequency = (frequency: number) => {
-    // Rango de frecuencia normal: entre 60-100 bpm
     return frequency >= 60 && frequency <= 100;
   };
 
   const chartData = {
-    labels: data.map(item => item.label),
+    labels: data.slice(0, range).map(item => item.label),
     datasets: [
       {
-        data: data.map(item => item.frequency),
+        data: data.slice(0, range).map(item => item.frequency),
         strokeWidth: 2,
-        color: (opacity = 1) => `rgba(128, 0, 128, ${opacity})`, // Color morado
+        color: (opacity = 1) => `rgba(128, 0, 128, ${opacity})`,
       },
     ],
   };
@@ -118,21 +130,41 @@ const FrequencyScreen = () => {
         Promedio de frecuencia: {averageFrequency} bpm
       </Text>
 
-      <LineChart
-        data={chartData}
-        width={screenWidth - 40}
-        height={220}
-        chartConfig={{
-          backgroundColor: '#f5f5f5',
-          backgroundGradientFrom: '#ffffff',
-          backgroundGradientTo: '#f5f5f5',
-          color: (opacity = 1) => `rgba(128, 0, 128, ${opacity})`, // Color morado
-          labelColor: (opacity = 1) => `rgba(128, 0, 128, ${opacity})`, // Etiquetas moradas
-          strokeWidth: 2,
-          barPercentage: 0.5,
-        }}
-        style={styles.chart}
-      />
+      <ScrollView horizontal={true} style={styles.chartContainer}>
+        <LineChart
+          data={chartData}
+          width={screenWidth * zoomLevel - 40} // Ajusta el tamaño de la gráfica según el zoom
+          height={220}
+          chartConfig={{
+            backgroundColor: '#f5f5f5',
+            backgroundGradientFrom: '#ffffff',
+            backgroundGradientTo: '#f5f5f5',
+            color: (opacity = 1) => `rgba(128, 0, 128, ${opacity})`,
+            labelColor: (opacity = 1) => `rgba(128, 0, 128, ${opacity})`,
+            strokeWidth: 2,
+            barPercentage: 0.5,
+          }}
+          style={styles.chart}
+        />
+      </ScrollView>
+
+      <View style={styles.zoomControls}>
+        <TouchableOpacity style={styles.zoomButton} onPress={handleZoomOut}>
+          <Text style={styles.zoomButtonText}>-</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.zoomButton} onPress={handleZoomIn}>
+          <Text style={styles.zoomButtonText}>+</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.rangeControls}>
+        <TouchableOpacity style={styles.rangeButton} onPress={() => setRange(Math.max(range - 1, 3))}>
+          <Text style={styles.rangeButtonText}>Ver Menos</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.rangeButton} onPress={() => setRange(Math.min(range + 1, data.length))}>
+          <Text style={styles.rangeButtonText}>Ver Más</Text>
+        </TouchableOpacity>
+      </View>
 
       <Text style={styles.notesTitle}>Tabla de Frecuencia Cardiaca</Text>
       <View style={styles.table}>
@@ -140,7 +172,7 @@ const FrequencyScreen = () => {
           <Text style={styles.tableHeader}>Hora</Text>
           <Text style={styles.tableHeader}>Frecuencia</Text>
         </View>
-        {data.map((item, index) => (
+        {data.slice(0, range).map((item, index) => (
           <View key={index} style={styles.tableRow}>
             <Text style={styles.tableCell}>{item.label}</Text>
             <Text style={styles.tableCell}>{item.frequency} bpm</Text>
@@ -162,26 +194,11 @@ const FrequencyScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#fff',
+    paddingTop: 20,
+    paddingHorizontal: 10,
   },
-  subHeader: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  date: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 10,
-    color:"grey",
-  },
-  normalFrequency: {
-    fontSize: 25,
-    fontWeight: "bold",
-    textAlign: 'center',
-    marginBottom: 20,
-  },
+
   viewControls: {
     flexDirection: 'row',
     marginBottom: 10,
@@ -202,56 +219,91 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
+
+  
+  
+
+  chartContainer: {
+    marginBottom: 20,
+  },
   chart: {
+    marginBottom: 20,
+  },
+  zoomControls: {
+    flexDirection: 'row',
+    justifyContent: 'center',
     marginVertical: 10,
+  },
+  zoomButton: {
+    padding: 10,
+    backgroundColor: '#8a2be2',
+    borderRadius: 5,
+    marginHorizontal: 10,
+  },
+  zoomButtonText: {
+    fontSize: 18,
+    color: 'white',
+  },
+  rangeControls: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  rangeButton: {
+    padding: 10,
+    backgroundColor: '#8a2be2',
+    borderRadius: 5,
+  },
+  rangeButtonText: {
+    color: 'white',
+    fontSize: 16,
   },
   table: {
     marginBottom: 20,
   },
   tableRowHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 5,
-    
-    backgroundColor: '#61678B',
-    paddingVertical: 5,
+    backgroundColor: '#f0f0f0',
+    padding: 10,
   },
   tableHeader: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: 'white',
     flex: 1,
     textAlign: 'center',
+    fontWeight: 'bold',
   },
   tableRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 5,
-    paddingVertical: 5,
+    padding: 10,
   },
   tableCell: {
-    fontSize: 16,
-    color: '#333',
     flex: 1,
     textAlign: 'center',
   },
-  notesTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginVertical: 10,
-  },
   description: {
-    fontSize: 14,
-    textAlign: 'justify',
-    marginVertical: 10,
-    color: 'gray',
+    fontSize: 16,
+    marginTop: 20,
+  },
+  notesTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 20,
   },
   noNotes: {
-    fontSize: 14,
-    color: 'gray',
-    textAlign: 'center',
+    fontSize: 16,
+    color: '#888',
+  },
+  normalFrequency: {
+    fontSize: 16,
+    color: '#4caf50',
+  },
+  date: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  subHeader: {
+    fontSize: 18,
+    marginTop: 10,
   },
 });
 
 export default FrequencyScreen;
-
