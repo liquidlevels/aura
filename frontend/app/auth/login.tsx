@@ -11,6 +11,8 @@ import {
   TouchableOpacity,
   Dimensions,
   Platform,
+  KeyboardAvoidingView,
+  ScrollView,
 } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import React from "react";
@@ -48,32 +50,45 @@ export default function Login() {
   };
 
   return (
-    <View style={styles.container}>
-      <SVGcurva />
-      <Text style={styles.login}>Iniciar sesión</Text>
-      <Text style={styles.leyenda}>
-        Introduce tu número de teléfono con el que te haz registrado y te
-        enviaremos un código para iniciar sesión.
-      </Text>
-      <Text style={styles.subtittle}> Número telefónico*</Text>
-      <TextInput
-        placeholder=""
-        value={phoneNumber}
-        onChangeText={setPhoneNumber}
-        keyboardType="phone-pad"
-        style={{
-          borderWidth: 1,
-          padding: 10,
-          marginBottom: 20,
-          width: "80%",
-          borderColor: "#adb5bd",
-          borderRadius: 8,
-        }}
-      />
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Ingresar</Text>
-      </TouchableOpacity>
-    </View>
+    <ScrollView>
+      <View style={styles.container}>
+        <SVGcurva />
+        <Text style={styles.login}>Iniciar sesión</Text>
+        <Text style={styles.leyenda}>
+          Introduce tu número de teléfono con el que te haz registrado y te
+          enviaremos un código para iniciar sesión.
+        </Text>
+        <Text style={styles.subtittle}> Número telefónico*</Text>
+        <KeyboardAvoidingView
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            width: "80%",
+          }}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          keyboardVerticalOffset={80}
+        >
+          <TextInput
+            placeholder=""
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+            keyboardType="phone-pad"
+            style={{
+              borderWidth: 1,
+              padding: 10,
+              marginBottom: 20,
+              width: "100%",
+              borderColor: "#adb5bd",
+              borderRadius: 8,
+            }}
+          />
+        </KeyboardAvoidingView>
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Ingresar</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 }
 

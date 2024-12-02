@@ -10,6 +10,8 @@ import {
   Image,
   Dimensions,
   Platform,
+  ScrollView,
+  KeyboardAvoidingView,
 } from "react-native";
 import { sendVerificationCode } from "../../utils/sendVerificationCode";
 import { useSession } from "@/ctx";
@@ -20,6 +22,7 @@ import axios from "axios";
 import API_URL from "@/apiConfig";
 import Svg, { Path, SvgAst } from "react-native-svg";
 import SVGcurva from "../components/SVGcurva";
+import { Keyboard } from "react-native";
 
 const { width } = Dimensions.get("window");
 
@@ -104,74 +107,90 @@ export default function Register() {
   };
 
   return (
-    <View style={styles.container}>
-      <SVGcurva />
-      <Text style={styles.tittle}>Registrate</Text>
-      <View style={{ flexDirection: "row", width: "80%" }}>
-        <View style={styles.text_container_uno}>
-          <Text style={styles.nombre}>Nombre *</Text>
-          <TextInput
-            placeholder=""
-            value={username}
-            onChangeText={setUsername}
-            style={{
-              borderWidth: 1,
-              padding: 10,
-              marginBottom: 15,
-              width: "100%",
-              borderRadius: 8,
-              borderColor: "#adb5bd",
-            }}
-          />
-        </View>
-        <View style={styles.container_dos}>
-          <Text style={styles.apellido}>Apellido *</Text>
-          <TextInput
-            placeholder=""
-            value={userLastName}
-            onChangeText={setUserLastName}
-            style={{
-              borderWidth: 1,
-              padding: 10,
-              marginBottom: 15,
-              width: "100%",
-              borderRadius: 8,
-              borderColor: "#adb5bd",
-            }}
-          />
-        </View>
-      </View>
-
-      <Text style={styles.tittle_container}>Número de teléfono*</Text>
-      <TextInput
-        placeholder=""
-        value={phoneNumber}
-        onChangeText={setPhoneNumber}
-        keyboardType="phone-pad"
+    <ScrollView>
+      <KeyboardAvoidingView
         style={{
-          borderWidth: 1,
-          padding: 10,
-          marginBottom: 5,
-          width: "80%",
-          borderRadius: 8,
-          borderColor: "#adb5bd",
+          flex: 1,
+          //justifyContent: "center",
+          //alignItems: "center",
+          //width: "100%",
         }}
-      />
-      <View style={styles.container_check}>
-        <TouchableOpacity
-          style={styles.checkbox}
-          onPress={() => setIsChecked(!isChecked)}
-        >
-          {isChecked && <Text style={styles.checkmark}>✔</Text>}
-          <Text style={styles.leyenda_terminos}>
-            He leído y acepto los términos y condiciones
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <TouchableOpacity style={styles.button_register} onPress={handleRegister}>
-        <Text style={styles.text_button}>Registrar</Text>
-      </TouchableOpacity>
-    </View>
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={80}
+      >
+        <View style={styles.container}>
+          <SVGcurva />
+          <Text style={styles.tittle}>Registrate</Text>
+          <View style={{ flexDirection: "row", width: "80%" }}>
+            <View style={styles.text_container_uno}>
+              <Text style={styles.nombre}>Nombre *</Text>
+              <TextInput
+                placeholder=""
+                value={username}
+                onChangeText={setUsername}
+                style={{
+                  borderWidth: 1,
+                  padding: 10,
+                  marginBottom: 15,
+                  width: "100%",
+                  borderRadius: 8,
+                  borderColor: "#adb5bd",
+                }}
+              />
+            </View>
+            <View style={styles.container_dos}>
+              <Text style={styles.apellido}>Apellido *</Text>
+              <TextInput
+                placeholder=""
+                value={userLastName}
+                onChangeText={setUserLastName}
+                style={{
+                  borderWidth: 1,
+                  padding: 10,
+                  marginBottom: 15,
+                  width: "100%",
+                  borderRadius: 8,
+                  borderColor: "#adb5bd",
+                }}
+              />
+            </View>
+          </View>
+
+          <Text style={styles.tittle_container}>Número de teléfono*</Text>
+          <TextInput
+            placeholder=""
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+            keyboardType="phone-pad"
+            style={{
+              borderWidth: 1,
+              padding: 10,
+              marginBottom: 5,
+              width: "80%",
+              borderRadius: 8,
+              borderColor: "#adb5bd",
+            }}
+          />
+          <View style={styles.container_check}>
+            <TouchableOpacity
+              style={styles.checkbox}
+              onPress={() => setIsChecked(!isChecked)}
+            >
+              {isChecked && <Text style={styles.checkmark}>✔</Text>}
+              <Text style={styles.leyenda_terminos}>
+                He leído y acepto los términos y condiciones
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity
+            style={styles.button_register}
+            onPress={handleRegister}
+          >
+            <Text style={styles.text_button}>Registrar</Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    </ScrollView>
   );
 }
 
@@ -253,9 +272,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   container_check: {
+    flex: 1,
     flexDirection: "row",
     marginTop: "1%",
     width: "80%",
+    marginVertical: "4%",
   },
   checkbox: {
     width: 15,
@@ -271,10 +292,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   leyenda_terminos: {
-    backgroundColor: "red",
+    //flex: 1,
+    //backgroundColor: "red",
     fontSize: 12,
-    flexDirection: "column",
-    justifyContent: "space-between",
+    //flexDirection: "column",
+    //justifyContent: "flex-end",
+    //alignItems: "flex-end",
+    width: "3000%",
+    marginLeft: 20,
+    //height: "300%",
   },
 
   button_register: {
