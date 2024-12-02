@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useSession } from "../../ctx";
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,9 +11,9 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 
 interface Nota {
   nota: string;
@@ -22,7 +22,7 @@ interface Nota {
 
 const Inicio = () => {
   const { user } = useSession();
-  const [nota, setNota] = useState('');
+  const [nota, setNota] = useState("");
   const [notas, setNotas] = useState<Nota[]>([]);
 
   const [saturacion, setSaturacion] = useState(
@@ -42,11 +42,11 @@ const Inicio = () => {
   }, []);
 
   const agregarNota = () => {
-    if (nota.trim() !== '') {
+    if (nota.trim() !== "") {
       setNotas([{ nota, fecha: new Date().toLocaleString() }, ...notas]);
-      setNota('');
+      setNota("");
     } else {
-      alert('Por favor ingresa una nota válida.');
+      alert("Por favor ingresa una nota válida.");
     }
   };
 
@@ -60,7 +60,7 @@ const Inicio = () => {
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={80} // Ajusta según el diseño
     >
       <FlatList
@@ -91,7 +91,7 @@ const Inicio = () => {
             {/* Tarjetas de saturación y frecuencia */}
             <TouchableOpacity
               style={styles.card}
-              onPress={() => router.push('/saturacion')}
+              onPress={() => router.push("/saturacion")}
             >
               <Text style={styles.cardTitle}>Saturación de oxígeno</Text>
               <Ionicons
@@ -107,7 +107,7 @@ const Inicio = () => {
 
             <TouchableOpacity
               style={styles.card}
-              onPress={() => router.push('/frecuencia')}
+              onPress={() => router.push("/frecuencia")}
             >
               <Text style={styles.cardTitle}>🩺 Frecuencia cardiaca</Text>
               <Ionicons
@@ -153,108 +153,108 @@ const Inicio = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: "#F5F5F5",
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: '#2C3E50',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#2C3E50",
+    textAlign: "center",
     marginBottom: 20,
   },
   iconContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#E8F8F5',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#E8F8F5",
     padding: 15,
     marginBottom: 20,
     borderRadius: 10,
   },
   iconText: {
     fontSize: 18,
-    color: '#16A085',
+    color: "#16A085",
     marginLeft: 10,
   },
   infoContainer: {
     marginBottom: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   infoItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   infoText: {
     fontSize: 16,
-    color: '#7F8C8D',
+    color: "#7F8C8D",
     marginLeft: 10,
   },
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 10,
     padding: 20,
     marginBottom: 20,
   },
   cardTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#2C3E50',
+    fontWeight: "bold",
+    color: "#2C3E50",
     marginBottom: 10,
   },
   arrowIcon: {
-    position: 'absolute',
+    position: "absolute",
     top: 10,
     right: 10,
   },
   cardText: {
     fontSize: 16,
-    color: '#7F8C8D',
+    color: "#7F8C8D",
   },
   notesContainer: {
     marginTop: 20,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 10,
     padding: 20,
   },
   subtitle: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#34495E',
+    fontWeight: "600",
+    color: "#34495E",
     marginBottom: 15,
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 15,
   },
   input: {
     flex: 1,
     padding: 12,
     borderWidth: 1,
-    borderColor: '#BDC3C7',
+    borderColor: "#BDC3C7",
     borderRadius: 8,
     marginRight: 10,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: "#F5F5F5",
   },
   note: {
-    backgroundColor: '#ECF0F1',
+    backgroundColor: "#ECF0F1",
     padding: 12,
     borderRadius: 8,
     marginBottom: 12,
   },
   noteText: {
     fontSize: 16,
-    color: '#2C3E50',
+    color: "#2C3E50",
   },
   noteDate: {
     fontSize: 12,
-    color: '#95A5A6',
+    color: "#95A5A6",
     marginTop: 6,
   },
   emptyText: {
-    textAlign: 'center',
-    color: '#7F8C8D',
-    fontStyle: 'italic',
+    textAlign: "center",
+    color: "#7F8C8D",
+    fontStyle: "italic",
     marginTop: 20,
   },
 });
