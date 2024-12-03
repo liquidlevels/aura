@@ -13,15 +13,23 @@ export default function AjustesScreen() {
         onPress={() => router.push("/ajustes/usuario")}
       >
         <Ionicons name="person-circle" size={24} color={"#7C7FEA"} />
-        <Text style={styles.text}> Información del Usuario</Text>
+        <Text style={styles.text}> Información del cuidador</Text>
         <Ionicons name="chevron-forward" size={24} />
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.row}
-        onPress={() => router.push("/ajustes/paciente")}
+        onPress={() => router.push("/ajustes/postPaciente")}
+      >
+        <Ionicons name="document" size={24} color={"#7C7FEA"} />
+        <Text style={styles.text}> Registrar paciente</Text>
+        <Ionicons name="chevron-forward" size={24} />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.row}
+        onPress={() => router.push("/ajustes/getPaciente")}
       >
         <Ionicons name="medical" size={24} color={"#7C7FEA"} />
-        <Text style={styles.text}> Información del Paciente</Text>
+        <Text style={styles.text}> Ver información del paciente</Text>
         <Ionicons name="chevron-forward" size={24} />
       </TouchableOpacity>
       <TouchableOpacity
@@ -32,19 +40,11 @@ export default function AjustesScreen() {
         <Text style={styles.text}> Notificaciones</Text>
         <Ionicons name="chevron-forward" size={24} />
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.row}
-        onPress={() => router.push("/video/videoStream")}
-      >
-        <Ionicons name="videocam" size={24} color={"#7C7FEA"} />
-        <Text style={styles.text}> Video en vivo</Text>
-        <Ionicons name="chevron-forward" size={24} />
-      </TouchableOpacity>
 
-      <View>
-        <Text>Usuario {user} </Text>
-        <Text>Cerrar sesion</Text>
-        <Button title="sign out" onPress={() => signOut()} />
+      <View style={styles.buttonContainer}>
+{/*         <Text>Usuario {user} </Text>
+        <Text>Cerrar sesion</Text> */}
+        <Button title="Cerrar Sesión" onPress={() => signOut()} />
       </View>
     </View>
   );
@@ -68,5 +68,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: "#FFF",
     width: "100%", // Full width for each row
+  },
+  buttonContainer: {
+    marginTop: 20,
+    alignItems: 'center'
   },
 });
