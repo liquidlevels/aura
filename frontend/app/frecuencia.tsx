@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import moment from 'moment';
+import { Slider } from 'react-native-elements';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -9,6 +10,21 @@ interface FrequencyData {
   label: string;
   frequency: number;
 }
+const [zoomLevel, setZoomLevel] = useState(1);  // Initialize zoomLevel properly
+
+const handleZoomIn = () => {
+  setZoomLevel(prevZoom => {
+    const newZoom = Math.min(prevZoom + 0.5, 2);  // Ensure it doesn't exceed the maximum value
+    return Math.round(newZoom * 100) / 100; // Round to 2 decimal places
+  });
+};
+
+const handleZoomOut = () => {
+  setZoomLevel(prevZoom => {
+    const newZoom = Math.max(prevZoom - 0.5, 1);  // Ensure it doesn't go below 1
+    return Math.round(newZoom * 100) / 100; // Round to 2 decimal places
+  });
+};
 
 const dayData: FrequencyData[] = [
   { label: '00:00', frequency: 75 },
@@ -119,42 +135,59 @@ const FrequencyScreen = () => {
           <Text style={styles.viewButtonText}>Por Mes</Text>
         </TouchableOpacity>
       </View>
-
+      <Text style={styles.title}>Frecuencia cardiaca</Text>
+      
+      <Text style={[styles.date, { textAlign: 'left', paddingLeft: 10 }]}>{date}</Text>
+      
       <Text style={[styles.normalFrequency, { textAlign: 'left', paddingLeft: 10 }]}>
         {isNormalFrequency(averageFrequency) ? 'Frecuencia Normal' : 'Frecuencia Anormal'}
       </Text>
-
-      <Text style={[styles.date, { textAlign: 'left', paddingLeft: 10 }]}>{date}</Text>
-
       <Text style={[styles.subHeader, { textAlign: 'left', paddingLeft: 10 }]}>
         Promedio de frecuencia: {averageFrequency} bpm
       </Text>
+      
 
       <ScrollView horizontal={true} style={styles.chartContainer}>
-        <LineChart
-          data={chartData}
-          width={screenWidth * zoomLevel - 40} // Ajusta el tamaño de la gráfica según el zoom
-          height={220}
-          chartConfig={{
-            backgroundColor: '#f5f5f5',
-            backgroundGradientFrom: '#ffffff',
-            backgroundGradientTo: '#f5f5f5',
-            color: (opacity = 1) => `rgba(128, 0, 128, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(128, 0, 128, ${opacity})`,
-            strokeWidth: 2,
-            barPercentage: 0.5,
-          }}
-          style={styles.chart}
-        />
-      </ScrollView>
+      <LineChart
+    data={chartData}
+    width={screenWidth * zoomLevel - 40} // Ajusta el tamaño de la gráfica según el zoom
+    height={220}
+    chartConfig={{
+      backgroundColor: '#FFFFFF',
+      backgroundGradientFrom: '#FFFFFF', 
+      backgroundGradientTo: '#FFFFFF', 
+      color: (opacity = 1) => `rgba(63, 81, 181, ${opacity})`, // Color de las líneas
+      strokeWidth: 3,
+      propsForDots: {
+        r: '6', 
+        strokeWidth: '2',
+        stroke: '#3949AB', // Color del borde de los puntos
+      },
+    }}
+    //bezier // Hace las líneas más suaves
+    style={{
+      ...styles.chart,
+      backgroundColor: '#FFFFFF', 
+    }}
+  />
 
-      <View style={styles.zoomControls}>
-        <TouchableOpacity style={styles.zoomButton} onPress={handleZoomOut}>
-          <Text style={styles.zoomButtonText}>-</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.zoomButton} onPress={handleZoomIn}>
-          <Text style={styles.zoomButtonText}>+</Text>
-        </TouchableOpacity>
+      </ScrollView>
+         {/* Control deslizante */}
+
+        <View style={styles.sliderContainer}>
+        <Text style={styles.sliderLabel}>Desliza para hahcer zoom {range}</Text>
+        <Slider
+          style={styles.slider}
+          minimumValue={3}
+          maximumValue={data.length}
+          step={1}
+          value={range}
+          onValueChange={(value) => setRange(value)}
+          minimumTrackTintColor="#3949AB"
+          maximumTrackTintColor="#D3D3D3"
+          thumbTintColor="#3949AB"
+        />
+      
       </View>
 
       <View style={styles.rangeControls}>
@@ -190,7 +223,6 @@ const FrequencyScreen = () => {
     </ScrollView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -198,7 +230,6 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingHorizontal: 10,
   },
-
   viewControls: {
     flexDirection: 'row',
     marginBottom: 10,
@@ -213,16 +244,18 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   activeViewButton: {
-    backgroundColor: '#8A2BE2',
+    backgroundColor: '#829EFF',
   },
   viewButtonText: {
     color: '#fff',
     fontWeight: 'bold',
   },
-
-  
-  
-
+  title: {
+    fontSize: 24,
+    textAlign: 'left',
+    marginTop: 20,
+    fontWeight: 'bold',
+  },
   chartContainer: {
     marginBottom: 20,
   },
@@ -235,14 +268,19 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   zoomButton: {
+    width: 100, 
+    height: 60, 
     padding: 10,
-    backgroundColor: '#8a2be2',
-    borderRadius: 5,
+    backgroundColor: '#829EFF',
+    borderRadius: 8, 
     marginHorizontal: 10,
+    justifyContent: 'center', 
+    alignItems: 'center',
   },
   zoomButtonText: {
-    fontSize: 18,
+    fontSize: 20,
     color: 'white',
+    textAlign: 'center',
   },
   rangeControls: {
     flexDirection: 'row',
@@ -250,13 +288,18 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   rangeButton: {
-    padding: 10,
-    backgroundColor: '#8a2be2',
-    borderRadius: 5,
+    width: 100, // Igual al zoomButton
+    height: 60, // Igual al zoomButton
+    backgroundColor: '#829EFF',
+    borderRadius: 8, // Igual al zoomButton
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 10, // Espaciado consistente
   },
   rangeButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 18, // Igual al zoomButtonText
+    textAlign: 'center',
   },
   table: {
     marginBottom: 20,
@@ -270,6 +313,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
     fontWeight: 'bold',
+    color: 'white',
   },
   tableRow: {
     flexDirection: 'row',
@@ -300,10 +344,24 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 16,
     marginBottom: 5,
+    color: "grey",
   },
   subHeader: {
     fontSize: 18,
     marginTop: 10,
+  },
+  sliderContainer: {
+    marginVertical: 20,
+    alignItems: 'center',
+  },
+  slider: {
+    width: '80%',
+    height: 40,
+  },
+  sliderLabel: {
+    fontSize: 16,
+    marginBottom: 10,
+    fontWeight: 'bold',
   },
 });
 

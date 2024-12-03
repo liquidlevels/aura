@@ -4,7 +4,7 @@ import * as React from "react";
 interface SessionContextProps {
   session: boolean;
   user: string | null;
-  signIn: (username: string, userLastName: string, phoneNumber: string) => void;
+  signIn: (username: string, userLastName: string) => void;
   signOut: () => void;
 }
 
@@ -20,15 +20,10 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   const [session, setSession] = useState(false);
   const [user, setUser] = useState<string | null>(null);
 
-  const signIn = (
-    username: string,
-    userLastName: string,
-    phoneNumber: string
-  ) => {
+  const signIn = (username: string, userLastName: string) => {
     setSession(true);
     setUser(username);
     setUser(userLastName);
-    setUser(phoneNumber);
   };
 
   const signOut = () => {

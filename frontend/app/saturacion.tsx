@@ -150,7 +150,12 @@ const OxygenSaturationScreen = () => {
       </View>
 
       <Text style={styles.title}>Saturación de Oxígeno</Text>
-      <Text style={styles.dateText}>{getCurrentDate()}</Text>
+     
+    
+      <Text style={[styles.dateText, { textAlign: 'left', paddingLeft: 10 }]}>
+  {getCurrentDate()}
+</Text>
+
       <Text style={styles.normalSaturationText}>Saturación normal: {averageSaturation}%</Text>
 
       <View style={styles.chartContainer}>
@@ -224,7 +229,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   activeViewButton: {
-    backgroundColor: '#8A2BE2',
+    backgroundColor: '#829EFF',
   },
   viewButtonText: {
     color: '#fff',
@@ -237,16 +242,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   dateText: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginTop: 10,
-    color: '#7F7F7F',
+    fontSize: 16,
+    marginBottom: 5,
+    color: 'grey',
+
   },
   normalSaturationText: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginTop: 10,
-    color: '#4CAF50',
+    
+      fontSize: 16,
+      color: '#4caf50',
+  
   },
   chartContainer: {
     alignItems: 'center',
@@ -282,6 +287,8 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
   },
+
+  
   legendContainer: {
     marginTop: 30,
     marginHorizontal: 20,
