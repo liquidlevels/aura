@@ -22,23 +22,22 @@ export default function RootLayout() {
           name="auth/validation"
           options={{ title: "Verificación" }}
         />
-
-        <Stack.Screen
-          name="ajustes"
-          options={{
-            title: "Ajustes",
-          }}
-        />
         <Stack.Screen
           name="ajustes/usuario"
           options={{
-            title: "Información del Usuario",
+            title: "Información del cuidador",
           }}
         />
         <Stack.Screen
-          name="ajustes/paciente"
+          name="ajustes/getPaciente"
           options={{
-            title: "Información del Paciente",
+            title: "Información del paciente",
+          }}
+        />
+        <Stack.Screen
+          name="ajustes/postPaciente"
+          options={{
+            title: "Registrar paciente",
           }}
         />
         <Stack.Screen
@@ -53,8 +52,6 @@ export default function RootLayout() {
             title: "Video en vivo",
           }}
         />
-
-        <Slot />
       </Stack>
     </SessionProvider>
   );
