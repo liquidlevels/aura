@@ -9,6 +9,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  useColorScheme,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
@@ -32,8 +33,16 @@ export default function PostPatientInfoScreen() {
     diseases: [],
     allergies: [],
     blood_type: "",
-    keeper_id: 0,
+    keeper_id: 1,
   });
+
+  const colorScheme = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
+
+  const pickerStyles = {
+    backgroundColor: isDarkMode ? "#333" : "#fff",
+    color: isDarkMode ? "#fff" : "#000",
+  };
 
   const handleSave = async () => {
     try {
@@ -44,17 +53,17 @@ export default function PostPatientInfoScreen() {
             diseases: patientInfo.diseases,
             allergies: patientInfo.allergies,
             blood_type: patientInfo.blood_type,
-            keeper_id: patientInfo.keeper_id, // Reemplazar con el id de cuidador de sesion
+            keeper_id: 1, // Reemplazar con el id de cuidador de sesion
           };
 
       await axios.post(`${API_URL}/patients`, payload, {
         headers: { "Content-Type": "application/json" },
       });
 
-      Alert.alert("Success", "Patient information has been saved.");
+      Alert.alert("Exito", "Paciente guardado.");
     } catch (error) {
-      console.error("Error saving patient information:", error);
-      Alert.alert("Error", "Failed to save patient information.");
+      console.error("Error, paciente no guardado", error);
+      Alert.alert("Error", "Paciente no guardado");
     }
   };
 
@@ -84,13 +93,16 @@ export default function PostPatientInfoScreen() {
           />
           <Text style={styles.infoText}>Fecha de Nacimiento (YYYY-MM-DD):</Text>
           <TextInput
-            style={styles.editableInput}
+            style={[styles.editableInput, { backgroundColor: pickerStyles.backgroundColor }]}
             value={patientInfo.dob}
             onChangeText={(value) =>
               setPatientInfo((prev) => ({ ...prev, dob: value }))
             }
+            placeholder="YYYY-MM-DD"
+            maxLength={10}
           />
-          <Text style={styles.infoText}>Cuidador ID:</Text>
+
+{/*           <Text style={styles.infoText}>Cuidador ID:</Text>
           <TextInput
             style={styles.editableInput}
             keyboardType="numeric"
@@ -98,10 +110,10 @@ export default function PostPatientInfoScreen() {
             onChangeText={(value) =>
               setPatientInfo((prev) => ({
                 ...prev,
-                keeper_id: parseInt(value) || 0,
+                keeper_id: parseInt(value) || 1,
               }))
             }
-          />
+          /> */}
           <Text style={styles.infoText}>Alergias (separar con comas):</Text>
           <TextInput
             style={styles.editableInput}
@@ -130,9 +142,10 @@ export default function PostPatientInfoScreen() {
             onValueChange={(value) =>
               setPatientInfo((prev) => ({ ...prev, blood_type: value }))
             }
+            style={pickerStyles}
           >
             {["Selecciona tipo de sangre", "O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"].map((type) => (
-              <Picker.Item key={type} label={type} value={type} />
+              <Picker.Item key={type} label={type} value={type} style={{ color: pickerStyles.color }} />
             ))}
           </Picker>
         </View>
