@@ -64,26 +64,31 @@ const Inicio = () => {
       keyboardVerticalOffset={80} // Ajusta según el diseño
     >
       <FlatList
+        style={{
+          flex: 1,
+          padding: "2%",
+          margin: "2%",
+        }}
         data={notas}
         keyExtractor={(item, index) => index.toString()}
         ListHeaderComponent={
           <>
-            <Text style={styles.title}>Bienvenido, {user} ✌</Text>
+            <Text style={styles.title}>Bienvenido, {user} ! </Text>
 
             {/* Información de video */}
             <View style={styles.iconContainer}>
-              <Ionicons name="videocam" size={30} color="#FF6347" />
+              <Ionicons name="videocam" size={30} color="#666adf" />
               <Text style={styles.iconText}>Video en vivo</Text>
             </View>
 
             {/* Información de temperatura y humedad */}
             <View style={styles.infoContainer}>
               <View style={styles.infoItem}>
-                <Ionicons name="thermometer" size={30} color="#3498DB" />
+                <Ionicons name="thermometer" size={30} color="#839eff" />
                 <Text style={styles.infoText}>Temperatura: 22°C</Text>
               </View>
               <View style={styles.infoItem}>
-                <Ionicons name="water" size={30} color="#1ABC9C" />
+                <Ionicons name="water" size={30} color="#839eff" />
                 <Text style={styles.infoText}>Humedad: 60%</Text>
               </View>
             </View>
@@ -93,15 +98,23 @@ const Inicio = () => {
               style={styles.card}
               onPress={() => router.push("/saturacion")}
             >
-              <Text style={styles.cardTitle}>Saturación de oxígeno</Text>
+              <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
+                <Ionicons
+                  style={{ marginRight: 10 }}
+                  name="water"
+                  size={24}
+                  color="#a93226"
+                />
+                <Text style={styles.cardTitle}> Oxigenación SpO2</Text>
+              </View>
               <Ionicons
                 name="chevron-forward"
                 size={24}
-                color="#3498DB"
+                color="#E74C3C"
                 style={styles.arrowIcon}
               />
               <Text style={styles.cardText}>
-                🌳 Saturación de oxígeno: {saturacion}%
+                Oxigenación SpO2: {saturacion}%
               </Text>
             </TouchableOpacity>
 
@@ -109,7 +122,15 @@ const Inicio = () => {
               style={styles.card}
               onPress={() => router.push("/frecuencia")}
             >
-              <Text style={styles.cardTitle}>🩺 Frecuencia cardiaca</Text>
+              <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
+                <Ionicons
+                  style={{ marginRight: 10 }}
+                  name="fitness"
+                  size={24}
+                  color="#a93226"
+                />
+                <Text style={styles.cardTitle}> Frecuencia cardiaca</Text>
+              </View>
               <Ionicons
                 name="chevron-forward"
                 size={24}
@@ -165,14 +186,14 @@ const styles = StyleSheet.create({
   iconContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#E8F8F5",
-    padding: 15,
+    backgroundColor: "#e7f5ff",
+    padding: 20,
     marginBottom: 20,
     borderRadius: 10,
   },
   iconText: {
     fontSize: 18,
-    color: "#16A085",
+    color: "#3498db",
     marginLeft: 10,
   },
   infoContainer: {
@@ -187,7 +208,7 @@ const styles = StyleSheet.create({
   infoText: {
     fontSize: 16,
     color: "#7F8C8D",
-    marginLeft: 10,
+    marginHorizontal: 10,
   },
   card: {
     backgroundColor: "#FFFFFF",

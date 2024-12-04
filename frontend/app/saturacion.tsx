@@ -1,9 +1,16 @@
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  ScrollView,
+  Dimensions,
+} from "react-native";
+import { PieChart } from "react-native-chart-kit";
 
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
-import { PieChart } from 'react-native-chart-kit';
-
-const screenWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get("window").width;
 
 // Tipos de datos
 interface OxygenSaturationData {
@@ -13,44 +20,52 @@ interface OxygenSaturationData {
 
 // Datos iniciales
 const dayData: OxygenSaturationData[] = [
-  { label: '00:00', saturation: 95 },
-  { label: '06:00', saturation: 92 },
-  { label: '12:00', saturation: 96 },
-  { label: '18:00', saturation: 94 },
-  { label: '24:00', saturation: 93 },
+  { label: "00:00", saturation: 95 },
+  { label: "06:00", saturation: 92 },
+  { label: "12:00", saturation: 96 },
+  { label: "18:00", saturation: 94 },
+  { label: "24:00", saturation: 93 },
 ];
 
 const weekData: OxygenSaturationData[] = [
-  { label: 'Lunes', saturation: 94 },
-  { label: 'Martes', saturation: 95 },
-  { label: 'Miércoles', saturation: 96 },
-  { label: 'Jueves', saturation: 93 },
-  { label: 'Viernes', saturation: 95 },
-  { label: 'Sábado', saturation: 96 },
-  { label: 'Domingo', saturation: 94 },
+  { label: "Lunes", saturation: 94 },
+  { label: "Martes", saturation: 95 },
+  { label: "Miércoles", saturation: 96 },
+  { label: "Jueves", saturation: 93 },
+  { label: "Viernes", saturation: 95 },
+  { label: "Sábado", saturation: 96 },
+  { label: "Domingo", saturation: 94 },
 ];
 
 const monthData: OxygenSaturationData[] = [
-  { label: 'Enero', saturation: 95 },
-  { label: 'Febrero', saturation: 94 },
-  { label: 'Marzo', saturation: 96 },
-  { label: 'Abril', saturation: 93 },
-  { label: 'Mayo', saturation: 95 },
-  { label: 'Junio', saturation: 96 },
-  { label: 'Julio', saturation: 94 },
-  { label: 'Agosto', saturation: 95 },
-  { label: 'Septiembre', saturation: 94 },
-  { label: 'Octubre', saturation: 96 },
-  { label: 'Noviembre', saturation: 93 },
-  { label: 'Diciembre', saturation: 95 },
+  { label: "Enero", saturation: 95 },
+  { label: "Febrero", saturation: 94 },
+  { label: "Marzo", saturation: 96 },
+  { label: "Abril", saturation: 93 },
+  { label: "Mayo", saturation: 95 },
+  { label: "Junio", saturation: 96 },
+  { label: "Julio", saturation: 94 },
+  { label: "Agosto", saturation: 95 },
+  { label: "Septiembre", saturation: 94 },
+  { label: "Octubre", saturation: 96 },
+  { label: "Noviembre", saturation: 93 },
+  { label: "Diciembre", saturation: 95 },
 ];
 
 // Colores para el gráfico
-const COLORS = ['#8A2BE2', '#9370DB', '#BA55D3', '#DDA0DD', '#EE82EE', '#DA70D6', '#E6E6FA'];
+const COLORS = [
+  "#8A2BE2",
+  "#9370DB",
+  "#BA55D3",
+  "#DDA0DD",
+  "#EE82EE",
+  "#DA70D6",
+  "#E6E6FA",
+];
 
 const OxygenSaturationScreen = () => {
   const [data, setData] = useState(dayData); // Datos actuales según la vista
-  const [view, setView] = useState<'day' | 'week' | 'month'>('day'); // Vista seleccionada
+  const [view, setView] = useState<"day" | "week" | "month">("day"); // Vista seleccionada
   const [averageSaturation, setAverageSaturation] = useState(0); // Valor promedio de saturación
 
   // Calcula el promedio de saturación
@@ -65,11 +80,11 @@ const OxygenSaturationScreen = () => {
   }, [data]);
 
   // Cambia los datos según la vista
-  const handleChangeView = (newView: 'day' | 'week' | 'month') => {
+  const handleChangeView = (newView: "day" | "week" | "month") => {
     setView(newView);
-    if (newView === 'day') {
+    if (newView === "day") {
       setData(dayData);
-    } else if (newView === 'week') {
+    } else if (newView === "week") {
       setData(weekData);
     } else {
       setData(monthData);
@@ -81,7 +96,7 @@ const OxygenSaturationScreen = () => {
     name: item.label,
     saturation: item.saturation,
     color: COLORS[index % COLORS.length],
-    legendFontColor: '#7F7F7F',
+    legendFontColor: "#7F7F7F",
     legendFontSize: 12,
   }));
 
@@ -91,13 +106,22 @@ const OxygenSaturationScreen = () => {
 
       {/* Controles para cambiar la vista */}
       <View style={styles.viewControls}>
-        <TouchableOpacity style={styles.viewButton} onPress={() => handleChangeView('day')}>
+        <TouchableOpacity
+          style={styles.viewButton}
+          onPress={() => handleChangeView("day")}
+        >
           <Text style={styles.viewButtonText}>Por Día</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.viewButton} onPress={() => handleChangeView('week')}>
+        <TouchableOpacity
+          style={styles.viewButton}
+          onPress={() => handleChangeView("week")}
+        >
           <Text style={styles.viewButtonText}>Por Semana</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.viewButton} onPress={() => handleChangeView('month')}>
+        <TouchableOpacity
+          style={styles.viewButton}
+          onPress={() => handleChangeView("month")}
+        >
           <Text style={styles.viewButtonText}>Por Mes</Text>
         </TouchableOpacity>
       </View>
@@ -115,7 +139,9 @@ const OxygenSaturationScreen = () => {
             color: () => `rgba(0, 0, 0, 0.5)`,
           }}
         />
-        <Text style={styles.averageText}>Promedio de saturación: {averageSaturation}%</Text>
+        <Text style={styles.averageText}>
+          Promedio de saturación: {averageSaturation}%
+        </Text>
       </View>
 
       {/* Tabla de datos */}
@@ -143,49 +169,49 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   viewControls: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     marginBottom: 20,
   },
   viewButton: {
-    backgroundColor: '#8A2BE2',
+    backgroundColor: "#666adf",
     paddingVertical: 8,
     paddingHorizontal: 20,
     borderRadius: 5,
   },
   viewButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
   },
   chartContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
   },
   averageText: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 10,
   },
   subtitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   tableRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    borderBottomColor: "#ddd",
   },
   tableCell: {
     flex: 1,
-    textAlign: 'center',
+    textAlign: "center",
     padding: 8,
     fontSize: 16,
   },
