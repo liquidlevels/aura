@@ -4,7 +4,9 @@ import { LineChart } from 'react-native-chart-kit';
 import moment from 'moment';
 import Slider from '@react-native-community/slider';
 import { Button, Icon } from 'react-native-elements';
+import { GestureHandlerRootView, PinchGestureHandler, State } from 'react-native-gesture-handler';
 
+import axios from 'axios';
 const screenWidth = Dimensions.get('window').width;
 
 interface FrequencyData {
@@ -56,6 +58,65 @@ const FrequencyScreen = () => {
   const minZoom = 1; // Nivel mínimo de zoom
   const [isSliderVisible, setIsSliderVisible] = useState(false);
 
+
+
+  // Función para filtrar los datos recibidos de la API por frecuencia cardíaca y fecha
+  const filterDataFromApi = (data, filterCriteria) => {
+    return data
+      .filter(item => {
+        // Filtrar por frecuencia cardíaca, si se especifica
+        if (filterCriteria.heartRate && item.heart_rate !== filterCriteria.heartRate) {
+          return false;
+        }
+  
+        // Filtrar por fecha, si se especifica
+        if (filterCriteria.date && item.date !== filterCriteria.date) {
+          return false;
+        }
+  
+        return true;
+      })
+      .map(item => {
+        // Retornar solo los campos de interés: frecuencia cardíaca, ID y fecha
+        return {
+          heart_rate: item.heart_rate,
+          id: item.id,
+          date: item.date
+        };
+      });
+  };
+  
+  // Función para obtener los datos de la API y filtrarlos
+  const fetchFilteredData = async (filterCriteria) => {
+    try {
+      // Realiza la solicitud GET a la API
+      const response = await axios.get('`${API_URL}/sensors/dht22`'); // Reemplaza con la URL real de tu API
+  
+      // Filtra los datos con base en los criterios
+      const filteredData = filterDataFromApi(response.data, filterCriteria);
+  
+      // Imprime los datos filtrados
+      console.log(filteredData);
+    } catch (error) {
+      console.error('Error al obtener los datos:', error);
+    }
+  };
+  
+  // Criterios de filtrado
+  const criteria = {
+    heartRate: 75,  // Filtrar por frecuencia cardíaca
+    date: "26/11/2024"  // Filtrar por fecha
+  };
+  
+  // Llamada a la función para obtener y filtrar los datos
+  fetchFilteredData(criteria);
+  const handlePinchGesture = (event) => {
+    if (event.nativeEvent.state === State.END) {
+      const zoom = event.nativeEvent.scale;
+      setZoomLevel(Math.min(Math.max(zoom, minZoom), maxZoom)); // Limitar el zoom al rango permitido
+    }
+  };
+
   // Función para manejar el zoom
   const handleZoomChange = (value) => {
     setZoomLevel(value);
@@ -75,8 +136,7 @@ const FrequencyScreen = () => {
   const handleChangeView = (newView: 'day' | 'week' | 'month') => {
     setView(newView);
     if (newView === 'day') {
-      setData(dayData);
-    } else if (newView === 'week') {
+      setData(dayData); } else if (newView === 'week') {
       setData(weekData);
     } else if (newView === 'month') {
       setData(monthData);
@@ -130,35 +190,36 @@ const FrequencyScreen = () => {
       <Text style={[styles.subHeader, { textAlign: 'left', paddingLeft: 10 }]}>
         Promedio de frecuencia: {averageFrequency} bpm
       </Text>
-  
+
+      <GestureHandlerRootView style={{ flex: 1 }}>
       <ScrollView horizontal={true} style={styles.chartContainer}>
-        <LineChart
-          data={chartData}
-          width={screenWidth * zoomLevel - 40} // Ajusta el tamaño de la gráfica según el zoom
-          height={220}
-          chartConfig={{
-            backgroundColor: '#FFFFFF',
-            backgroundGradientFrom: '#FFFFFF', 
-            backgroundGradientTo: '#FFFFFF', 
-            color: (opacity = 1) => `rgba(63, 81, 181, ${opacity})`, // Color de las líneas
-            strokeWidth: 3,
-            propsForDots: {
-              r: '6', 
-              strokeWidth: '2',
-              stroke: '#3949AB', // Color del borde de los puntos
-            },
-          }}
-          style={{
-            ...styles.chart,
-            backgroundColor: '#FFFFFF', 
-          }}
-        />
-      </ScrollView>
-      
+        <PinchGestureHandler onHandlerStateChange={handlePinchGesture}>
+          <View style={{ transform: [{ scale: zoomLevel }] }}>
+            <LineChart
+              data={chartData}
+              width={screenWidth * zoomLevel - 40} // Ajusta el tamaño de la gráfica según el zoom
+              height={220}
+              chartConfig={{
+                backgroundColor: '#FFFFFF',
+                backgroundGradientFrom: '#FFFFFF',
+                backgroundGradientTo: '#FFFFFF',
+                color: (opacity = 1) => `rgba(63, 81, 181, ${opacity})`, // Color de las líneas
+                strokeWidth: 3,
+                propsForDots: {
+                  r: '6',
+                  strokeWidth: '2',
+                  stroke: '#3949AB', // Color del borde de los puntos
+                },
+              }}
+              style={styles.chart} />
+              </View>
+              </PinchGestureHandler>
+              </ScrollView></GestureHandlerRootView>)};
+
       <View style={{ padding: 20 }}>
         {/* Botón para mostrar/ocultoar el slider */}
-        <TouchableOpacity  style = {styles.toogleButton}onPress={toggleSliderVisibility}>
-        <Icon name="help-outline" size={30}color='purple'/>
+        <TouchableOpacity  style = {styles.toggleButton}onPress={toggleSliderVisibility}>
+        <Icon name="help-outline" size={30}color='#61678B'/>
         </TouchableOpacity>{/* Slider que aparece/oculta según el estado */}
         {isSliderVisible && (
           <View style={{ marginTop: 20 }}>
@@ -282,7 +343,7 @@ const styles = StyleSheet.create({
   zoomLabel: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#3949AB',
+   
     marginBottom: 10,
   },
 
