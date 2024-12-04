@@ -191,105 +191,6 @@ const FrequencyScreen = () => {
   );
 };
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#f9f9f9',
-//     padding: 10,
-//   },
-//   viewControls: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-around',
-//     marginVertical: 10,
-//   },
-//   viewButton: {
-//     padding: 10,
-//     backgroundColor: '#3949AB',
-//     borderRadius: 5,
-//   },
-//   activeViewButton: {
-//     backgroundColor: '#303F9F',
-//   },
-//   viewButtonText: {
-//     color: '#fff',
-//     fontSize: 16,
-//   },
-//   title: {
-//     fontSize: 24,
-//     textAlign: 'center',
-//     marginVertical: 10,
-//     fontWeight: 'bold',
-//   },
-//   normalFrequency: {
-//     fontSize: 16,
-//     marginVertical: 5,
-//   },
-//   subHeader: {
-//     fontSize: 18,
-//     marginVertical: 5,
-//   },
-//   chartContainer: {
-//     marginTop: 20,
-//   },
-//   chart: {
-//     borderRadius: 10,
-//     marginLeft: 20,
-//   },
-//   zoomControls: {
-//     marginVertical: 20,
-//     alignItems: 'center',
-//   },
-//   zoomLabel: {
-//     fontSize: 18,
-//   },
-//   slider: {
-//     width: '80%',
-//     height: 40,
-//   },
-//   tableContainer: {
-//     marginVertical: 20,
-//     backgroundColor: '#fff',
-//     borderRadius: 5,
-//     padding: 10,
-//     elevation: 3,
-//   },
-//   tableRowHeader: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     borderBottomWidth: 1,
-//     paddingBottom: 10,
-//   },
-//   tableHeader: {
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//   },
-//   tableRow: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     paddingVertical: 8,
-//   },
-//   tableCell: {
-//     fontSize: 16,
-//     color: '#333',
-//   },
-//   description: {
-//     fontSize: 14,
-//     color: '#777',
-//     marginTop: 15,
-//     textAlign: 'justify',
-//   },
-//   notesTitle: {
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//     marginTop: 20,
-//   },
-//   noNotes: {
-//     fontSize: 14,
-//     color: '#777',
-//   },
-// });
-
-// export default FrequencyScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -330,11 +231,7 @@ const styles = StyleSheet.create({
   chart: {
     marginBottom: 20,
   },
-  zoomControls: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginVertical: 10,
-  },
+  
   zoomButton: {
     width: 100, 
     height: 60, 
@@ -352,7 +249,7 @@ const styles = StyleSheet.create({
   },
   rangeControls: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-evenly',
     marginBottom: 20,
   },
   rangeButton: {
@@ -438,6 +335,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     
     fontWeight: 'bold'
+  },
+    tableContainer: {
+    marginVertical: 20,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    padding: 10,
+    elevation: 3,
   },
 });
 
