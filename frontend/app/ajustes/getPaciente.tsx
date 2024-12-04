@@ -7,6 +7,7 @@ type PatientInfo = {
   name: string;
   lastname: string;
   dob: string;
+  age: number;
   diseases: string[];
   allergies: string[];
   blood_type: string;
@@ -19,7 +20,7 @@ export default function GetPatientInfoScreen() {
   useEffect(() => {
     const fetchPatientInfo = async () => {
       try {
-        const response = await axios.get(`${API_URL}/patients/11`); //replace with to-be-created patient id
+        const response = await axios.get(`${API_URL}/patients/2`); //replace with to-be-created patient id
         if (response.data) {
           setPatientInfo(response.data);
         } else {
@@ -47,6 +48,8 @@ export default function GetPatientInfoScreen() {
         <Text style={styles.editableText}>{patientInfo.lastname}</Text>
         <Text style={styles.infoText}>Fecha de Nacimiento:</Text>
         <Text style={styles.editableText}>{patientInfo.dob}</Text>
+        <Text style={styles.infoText}>Edad:</Text>
+        <Text style={styles.editableText}>{patientInfo.age}</Text>
         <Text style={styles.infoText}>Alergias:</Text>
         <Text style={styles.editableText}>
           {patientInfo.allergies.length ? patientInfo.allergies.join(", ") : "N/A"}
