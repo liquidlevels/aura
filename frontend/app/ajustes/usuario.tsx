@@ -6,20 +6,16 @@ import API_URL from "@/apiConfig";
 
 
 type UserInfo = {
-  phone: string;
-  id: number;
-  lastname: string;
-  name: string;
-  kinship: string;
+  phoneNumber: string;
+  userLastName: string;
+  username: string;
 };
 
 export default function InfoUsuarioScreen() {
   const [userInfo, setUserInfo] = useState<UserInfo>({
-    phone: "",
-    id: 0,
-    lastname: "",
-    name: "",
-    kinship: "",
+    phoneNumber: "",
+    userLastName: "",
+    username: "",
   });
 
   // Fetch user information from the database
@@ -41,13 +37,11 @@ export default function InfoUsuarioScreen() {
     <View style={styles.container}>
       <View style={styles.infoContainer}>
         <Text style={styles.infoText}>Nombre:</Text>
-        <Text style={styles.editableText}>{userInfo.name}</Text>
+        <Text style={styles.editableText}>{userInfo.username}</Text>
         <Text style={styles.infoText}>Apellido(s):</Text>
-        <Text style={styles.editableText}>{userInfo.lastname}</Text>
+        <Text style={styles.editableText}>{userInfo.userLastName}</Text>
         <Text style={styles.infoText}>Número de teléfono:</Text>
-        <Text style={styles.editableText}>{userInfo.phone}</Text>
-        <Text style={styles.infoText}>Parentesco:</Text>
-        <Text style={styles.editableText}>{userInfo.kinship}</Text>
+        <Text style={styles.editableText}>{userInfo.phoneNumber}</Text>
       </View>
     </View>
   );
