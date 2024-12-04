@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from
 import { LineChart } from 'react-native-chart-kit';
 import moment from 'moment';
 import Slider from '@react-native-community/slider';
+import { Button, Icon } from 'react-native-elements';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -53,12 +54,16 @@ const FrequencyScreen = () => {
   const [zoomLevel, setZoomLevel] = useState(1); // Valor inicial del zoom
   const maxZoom = 5; // Nivel máximo de zoom
   const minZoom = 1; // Nivel mínimo de zoom
+  const [isSliderVisible, setIsSliderVisible] = useState(false);
 
   // Función para manejar el zoom
   const handleZoomChange = (value) => {
     setZoomLevel(value);
   };
-
+  const toggleSliderVisibility = () => {
+    setIsSliderVisible(!isSliderVisible); // Usar la función setIsSliderVisible
+  };
+  
   useEffect(() => {
     const totalFrequency = data.reduce((sum, { frequency }) => sum + frequency, 0);
     const average = totalFrequency / data.length;
@@ -92,7 +97,6 @@ const FrequencyScreen = () => {
       },
     ],
   };
-
   return (
     <ScrollView style={styles.container}>
       <View style={styles.viewControls}>
@@ -115,7 +119,7 @@ const FrequencyScreen = () => {
           <Text style={styles.viewButtonText}>Por Mes</Text>
         </TouchableOpacity>
       </View>
-
+  
       <Text style={styles.title}>Frecuencia cardiaca</Text>
       
       <Text style={[styles.date, { textAlign: 'left', paddingLeft: 10 }]}>{date}</Text>
@@ -126,7 +130,7 @@ const FrequencyScreen = () => {
       <Text style={[styles.subHeader, { textAlign: 'left', paddingLeft: 10 }]}>
         Promedio de frecuencia: {averageFrequency} bpm
       </Text>
-
+  
       <ScrollView horizontal={true} style={styles.chartContainer}>
         <LineChart
           data={chartData}
@@ -150,22 +154,41 @@ const FrequencyScreen = () => {
           }}
         />
       </ScrollView>
-
-      <View style={styles.zoomControls}>
-        <Text style={styles.zoomLabel}>Desliza para hacer zoom</Text>
-        <Slider
-          style={styles.slider}
-          minimumValue={minZoom}
-          maximumValue={maxZoom}
-          step={0.1}
-          value={zoomLevel}
-          onValueChange={handleZoomChange}
-          minimumTrackTintColor="#3949AB"
-          maximumTrackTintColor="#D3D3D3"
-          thumbTintColor="#3949AB"
-        />
+      
+      <View style={{ padding: 20 }}>
+        {/* Botón para mostrar/ocultoar el slider */}
+        <TouchableOpacity  style = {styles.toogleButton}onPress={toggleSliderVisibility}>
+        <Icon name="help-outline" size={30}color='purple'/>
+        </TouchableOpacity>{/* Slider que aparece/oculta según el estado */}
+        {isSliderVisible && (
+          <View style={{ marginTop: 20 }}>
+            <Text style={styles.zoomLabel}>Desliza para hacer zoom</Text>
+            <Slider
+              style={styles.slider}
+              minimumValue={minZoom}
+              maximumValue={maxZoom}
+              step={0.1}
+              value={zoomLevel}
+              onValueChange={handleZoomChange}
+              minimumTrackTintColor="#3949AB"
+              maximumTrackTintColor="#D3D3D3"
+              thumbTintColor="#3949AB"
+            />
+          </View>
+        )}
+        
+        {/* Controles de rango */}
+        <View style={styles.rangeControls}>
+          <TouchableOpacity style={styles.rangeButton} onPress={() => setRange(Math.max(range - 1, 3))}>
+            <Text style={styles.rangeButtonText}>Ver Menos</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.rangeButton} onPress={() => setRange(Math.min(range + 1, data.length))}>
+            <Text style={styles.rangeButtonText}>Ver Más</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-
+  
+      {/* Tabla de frecuencia cardiaca */}
       <Text style={styles.notesTitle}>Tabla de Frecuencia Cardiaca</Text>
       <View style={styles.tableContainer}>
         <View style={styles.tableRowHeader}>
@@ -179,18 +202,18 @@ const FrequencyScreen = () => {
           </View>
         ))}
       </View>
-
+  
+      {/* Descripción sobre la frecuencia cardiaca */}
       <Text style={styles.description}>
         Las frecuencias cardiacas normales varían entre 60 y 100 latidos por minuto (bpm) en reposo para la mayoría de los adultos.
         Valores fuera de este rango pueden indicar problemas cardíacos o un estado de salud fuera de lo normal.
       </Text>
-
+  
       <Text style={styles.notesTitle}>Notas Recientes:</Text>
       <Text style={styles.noNotes}>No hay notas para mostrar.</Text>
     </ScrollView>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -199,6 +222,25 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingHorizontal: 10,
   },
+
+  // Titulo
+  title: {
+    fontSize: 24,
+    textAlign: 'left',
+    marginTop: 20,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+
+  // Contenedor de la gráfica
+  chartContainer: {
+    marginBottom: 20,
+  },
+  chart: {
+    marginBottom: 20,
+  },
+
+  // Controles de vista
   viewControls: {
     flexDirection: 'row',
     marginBottom: 10,
@@ -219,76 +261,121 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
-  title: {
-    fontSize: 24,
-    textAlign: 'left',
-    marginTop: 20,
-    fontWeight: 'bold',
-  },
-  chartContainer: {
-    marginBottom: 20,
-  },
-  chart: {
-    marginBottom: 20,
-  },
-  
-  zoomButton: {
-    width: 100, 
-    height: 60, 
-    padding: 10,
-    backgroundColor: '#829EFF',
-    borderRadius: 8, 
-    marginHorizontal: 10,
-    justifyContent: 'center', 
+
+  // Controles de zoom y rango
+  zoomControls: {
+    marginVertical: 30,
     alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+    borderRadius: 12,
+    padding: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 6.27,
+    elevation: 10,
   },
-  zoomButtonText: {
-    fontSize: 20,
-    color: 'white',
-    textAlign: 'center',
+
+  zoomLabel: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#3949AB',
+    marginBottom: 10,
   },
+
+  // Estilos del Slider
+  sliderContainer: {
+    marginVertical: 20,
+    alignItems: 'center',
+    width: '100%',
+    
+  },
+  slider: {
+    width: '90%',
+    height: 40,
+    borderRadius: 20,
+ 
+    overflow: 'hidden',
+  },
+  sliderTrack: {
+    height: 5,
+    
+    borderRadius: 5,
+  },
+  sliderThumb: {
+    width: 30,
+    height: 30,
+    
+    borderRadius: 15,
+  },
+
+  // Botones de ver más y ver menos
   rangeControls: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     marginBottom: 20,
+    marginTop: 20,
   },
   rangeButton: {
-    width: 100, // Igual al zoomButton
-    height: 60, // Igual al zoomButton
-    backgroundColor: '#829EFF',
-    borderRadius: 8, // Igual al zoomButton
+    width: 120,
+    height: 50,
+    backgroundColor: '#61678B',
+    borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 10, // Espaciado consistente
+    marginHorizontal: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 6.27,
+    elevation: 10,
   },
   rangeButtonText: {
-    color: 'white',
-    fontSize: 18, // Igual al zoomButtonText
-    textAlign: 'center',
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
+
+  // Tabla
   table: {
     marginBottom: 20,
   },
   tableRowHeader: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 5,
+    
     backgroundColor: '#61678B',
-    padding: 10,
+    paddingVertical: 5,
   },
   tableHeader: {
-    flex: 1,
-    textAlign: 'center',
+    fontSize: 16,
     fontWeight: 'bold',
     color: 'white',
+    flex: 1,
+    textAlign: 'center',
   },
   tableRow: {
     flexDirection: 'row',
-    padding: 10,
+    justifyContent: 'space-between',
+    marginVertical: 5,
+    paddingVertical: 5,
   },
   tableCell: {
+    fontSize: 16,
+    color: '#333',
     flex: 1,
     textAlign: 'center',
-    color: '#333',
   },
+
+  
+  // Descripción y notas
   description: {
     fontSize: 16,
     marginTop: 20,
@@ -314,36 +401,24 @@ const styles = StyleSheet.create({
   subHeader: {
     fontSize: 18,
     marginTop: 10,
-  },
-  sliderContainer: {
-    marginVertical: 20,
-    alignItems: 'center',
-  },
-  slider: {
-    width: '80%',
-    height: 40,
-  },
-  sliderLabel: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-      zoomControls: {
-    marginVertical: 20,
-    alignItems: 'center',
-  },
-  zoomLabel: {
-    fontSize: 18,
-    
-    fontWeight: 'bold'
-  },
-    tableContainer: {
-    marginVertical: 20,
+  },  toggleButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
     backgroundColor: '#fff',
-    borderRadius: 5,
-    padding: 10,
-    elevation: 3,
+    borderRadius: 20,
+    padding: 5,
+    elevation: 5, // Da una sombra para que se vea más visible
+  },
+
+// Contenedor de la tabla
+tableContainer: {
+  marginVertical: 20,
+  backgroundColor: '#fff',
+  borderRadius: 5,
+  padding: 10,
+  elevation: 3,
   },
 });
-
 
 export default FrequencyScreen;
