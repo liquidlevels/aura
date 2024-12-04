@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import moment from 'moment';
-import { Slider } from 'react-native-elements';
+import Slider from '@react-native-community/slider';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -10,21 +10,6 @@ interface FrequencyData {
   label: string;
   frequency: number;
 }
-const [zoomLevel, setZoomLevel] = useState(1);  // Initialize zoomLevel properly
-
-const handleZoomIn = () => {
-  setZoomLevel(prevZoom => {
-    const newZoom = Math.min(prevZoom + 0.5, 2);  // Ensure it doesn't exceed the maximum value
-    return Math.round(newZoom * 100) / 100; // Round to 2 decimal places
-  });
-};
-
-const handleZoomOut = () => {
-  setZoomLevel(prevZoom => {
-    const newZoom = Math.max(prevZoom - 0.5, 1);  // Ensure it doesn't go below 1
-    return Math.round(newZoom * 100) / 100; // Round to 2 decimal places
-  });
-};
 
 const dayData: FrequencyData[] = [
   { label: '00:00', frequency: 75 },
@@ -65,7 +50,14 @@ const FrequencyScreen = () => {
   const [averageFrequency, setAverageFrequency] = useState(0);
   const [date, setDate] = useState(moment().format('dddd, D [de] MMMM [de] YYYY'));
   const [range, setRange] = useState(3); // Rango visible de puntos
-  const [zoomLevel, setZoomLevel] = useState(1); // Controla el zoom de la gráfica
+  const [zoomLevel, setZoomLevel] = useState(1); // Valor inicial del zoom
+  const maxZoom = 5; // Nivel máximo de zoom
+  const minZoom = 1; // Nivel mínimo de zoom
+
+  // Función para manejar el zoom
+  const handleZoomChange = (value) => {
+    setZoomLevel(value);
+  };
 
   useEffect(() => {
     const totalFrequency = data.reduce((sum, { frequency }) => sum + frequency, 0);
@@ -83,18 +75,6 @@ const FrequencyScreen = () => {
       setData(weekData);
     } else if (newView === 'month') {
       setData(monthData);
-    }
-  };
-
-  const handleZoomIn = () => {
-    if (zoomLevel < 2) {
-      setZoomLevel(zoomLevel + 0.5); // Aumenta el zoom
-    }
-  };
-
-  const handleZoomOut = () => {
-    if (zoomLevel > 1) {
-      setZoomLevel(zoomLevel - 0.5); // Disminuye el zoom
     }
   };
 
@@ -135,6 +115,7 @@ const FrequencyScreen = () => {
           <Text style={styles.viewButtonText}>Por Mes</Text>
         </TouchableOpacity>
       </View>
+
       <Text style={styles.title}>Frecuencia cardiaca</Text>
       
       <Text style={[styles.date, { textAlign: 'left', paddingLeft: 10 }]}>{date}</Text>
@@ -145,62 +126,48 @@ const FrequencyScreen = () => {
       <Text style={[styles.subHeader, { textAlign: 'left', paddingLeft: 10 }]}>
         Promedio de frecuencia: {averageFrequency} bpm
       </Text>
-      
 
       <ScrollView horizontal={true} style={styles.chartContainer}>
-      <LineChart
-    data={chartData}
-    width={screenWidth * zoomLevel - 40} // Ajusta el tamaño de la gráfica según el zoom
-    height={220}
-    chartConfig={{
-      backgroundColor: '#FFFFFF',
-      backgroundGradientFrom: '#FFFFFF', 
-      backgroundGradientTo: '#FFFFFF', 
-      color: (opacity = 1) => `rgba(63, 81, 181, ${opacity})`, // Color de las líneas
-      strokeWidth: 3,
-      propsForDots: {
-        r: '6', 
-        strokeWidth: '2',
-        stroke: '#3949AB', // Color del borde de los puntos
-      },
-    }}
-    //bezier // Hace las líneas más suaves
-    style={{
-      ...styles.chart,
-      backgroundColor: '#FFFFFF', 
-    }}
-  />
-
+        <LineChart
+          data={chartData}
+          width={screenWidth * zoomLevel - 40} // Ajusta el tamaño de la gráfica según el zoom
+          height={220}
+          chartConfig={{
+            backgroundColor: '#FFFFFF',
+            backgroundGradientFrom: '#FFFFFF', 
+            backgroundGradientTo: '#FFFFFF', 
+            color: (opacity = 1) => `rgba(63, 81, 181, ${opacity})`, // Color de las líneas
+            strokeWidth: 3,
+            propsForDots: {
+              r: '6', 
+              strokeWidth: '2',
+              stroke: '#3949AB', // Color del borde de los puntos
+            },
+          }}
+          style={{
+            ...styles.chart,
+            backgroundColor: '#FFFFFF', 
+          }}
+        />
       </ScrollView>
-         {/* Control deslizante */}
 
-        <View style={styles.sliderContainer}>
-        <Text style={styles.sliderLabel}>Desliza para hahcer zoom {range}</Text>
+      <View style={styles.zoomControls}>
+        <Text style={styles.zoomLabel}>Desliza para hacer zoom</Text>
         <Slider
           style={styles.slider}
-          minimumValue={3}
-          maximumValue={data.length}
-          step={1}
-          value={range}
-          onValueChange={(value) => setRange(value)}
+          minimumValue={minZoom}
+          maximumValue={maxZoom}
+          step={0.1}
+          value={zoomLevel}
+          onValueChange={handleZoomChange}
           minimumTrackTintColor="#3949AB"
           maximumTrackTintColor="#D3D3D3"
           thumbTintColor="#3949AB"
         />
-      
-      </View>
-
-      <View style={styles.rangeControls}>
-        <TouchableOpacity style={styles.rangeButton} onPress={() => setRange(Math.max(range - 1, 3))}>
-          <Text style={styles.rangeButtonText}>Ver Menos</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.rangeButton} onPress={() => setRange(Math.min(range + 1, data.length))}>
-          <Text style={styles.rangeButtonText}>Ver Más</Text>
-        </TouchableOpacity>
       </View>
 
       <Text style={styles.notesTitle}>Tabla de Frecuencia Cardiaca</Text>
-      <View style={styles.table}>
+      <View style={styles.tableContainer}>
         <View style={styles.tableRowHeader}>
           <Text style={styles.tableHeader}>Hora</Text>
           <Text style={styles.tableHeader}>Frecuencia</Text>
@@ -223,6 +190,107 @@ const FrequencyScreen = () => {
     </ScrollView>
   );
 };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: '#f9f9f9',
+//     padding: 10,
+//   },
+//   viewControls: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-around',
+//     marginVertical: 10,
+//   },
+//   viewButton: {
+//     padding: 10,
+//     backgroundColor: '#3949AB',
+//     borderRadius: 5,
+//   },
+//   activeViewButton: {
+//     backgroundColor: '#303F9F',
+//   },
+//   viewButtonText: {
+//     color: '#fff',
+//     fontSize: 16,
+//   },
+//   title: {
+//     fontSize: 24,
+//     textAlign: 'center',
+//     marginVertical: 10,
+//     fontWeight: 'bold',
+//   },
+//   normalFrequency: {
+//     fontSize: 16,
+//     marginVertical: 5,
+//   },
+//   subHeader: {
+//     fontSize: 18,
+//     marginVertical: 5,
+//   },
+//   chartContainer: {
+//     marginTop: 20,
+//   },
+//   chart: {
+//     borderRadius: 10,
+//     marginLeft: 20,
+//   },
+//   zoomControls: {
+//     marginVertical: 20,
+//     alignItems: 'center',
+//   },
+//   zoomLabel: {
+//     fontSize: 18,
+//   },
+//   slider: {
+//     width: '80%',
+//     height: 40,
+//   },
+//   tableContainer: {
+//     marginVertical: 20,
+//     backgroundColor: '#fff',
+//     borderRadius: 5,
+//     padding: 10,
+//     elevation: 3,
+//   },
+//   tableRowHeader: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     borderBottomWidth: 1,
+//     paddingBottom: 10,
+//   },
+//   tableHeader: {
+//     fontSize: 18,
+//     fontWeight: 'bold',
+//   },
+//   tableRow: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     paddingVertical: 8,
+//   },
+//   tableCell: {
+//     fontSize: 16,
+//     color: '#333',
+//   },
+//   description: {
+//     fontSize: 14,
+//     color: '#777',
+//     marginTop: 15,
+//     textAlign: 'justify',
+//   },
+//   notesTitle: {
+//     fontSize: 18,
+//     fontWeight: 'bold',
+//     marginTop: 20,
+//   },
+//   noNotes: {
+//     fontSize: 14,
+//     color: '#777',
+//   },
+// });
+
+// export default FrequencyScreen;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -360,9 +428,18 @@ const styles = StyleSheet.create({
   },
   sliderLabel: {
     fontSize: 16,
-    marginBottom: 10,
     fontWeight: 'bold',
   },
+      zoomControls: {
+    marginVertical: 20,
+    alignItems: 'center',
+  },
+  zoomLabel: {
+    fontSize: 18,
+    
+    fontWeight: 'bold'
+  },
 });
+
 
 export default FrequencyScreen;

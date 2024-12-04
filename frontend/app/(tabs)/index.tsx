@@ -344,12 +344,10 @@
 //   },
 // });
 
-// export default Inicio;
 import * as React from "react";
 import { View, Text, TextInput, Modal, Button, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, Alert } from "react-native";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { StyleSheet } from "react-native";
-
 import { useState, useEffect } from "react";
 import { router } from "expo-router";
 import axios from "axios"; // Asegúrate de tener axios instalado
@@ -454,121 +452,128 @@ const Inicio = () => {
   );
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={notas}
-        keyExtractor={(item, index) => index.toString()}
-        ListHeaderComponent={
-          <>
-            <Text style={styles.title}>Bienvenido, {user} ✌🏻👩🏻‍⚕️</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <View style={styles.container}>
+          <FlatList
+            data={notas}
+            keyExtractor={(item, index) => index.toString()}
+            ListHeaderComponent={
+              <>
+                <Text style={styles.title}>Bienvenido, {user} ✌🏻👩🏻‍⚕️</Text>
 
-            <TouchableOpacity
-              style={styles.iconContainer}
-              onPress={() => router.push("/video/videoStream")}
-            >
-              <Ionicons name="videocam" size={30} color="#839eff" />
-              <Text style={styles.iconText}>Video en vivo</Text>
-            </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.iconContainer}
+                  onPress={() => router.push("/video/videoStream")}
+                >
+                  <Ionicons name="videocam" size={30} color="#839eff" />
+                  <Text style={styles.iconText}>Video en vivo</Text>
+                </TouchableOpacity>
 
-            <View style={styles.infoContainer}>
-              <View style={styles.infoItem}>
-                <Ionicons name="thermometer" size={30} color="#839eff" />
-                <Text style={styles.infoText}>Temperatura: {temperatura}°C</Text>
-              </View>
-              <View style={styles.infoItem}>
-                <Ionicons name="water" size={30} color="#839eff" />
-                <Text style={styles.infoText}>Humedad: {humedad}%</Text>
+                <View style={styles.infoContainer}>
+                  <View style={styles.infoItem}>
+                    <Ionicons name="thermometer" size={30} color="#839eff" />
+                    <Text style={styles.infoText}>Temperatura: {temperatura}°C</Text>
+                  </View>
+                  <View style={styles.infoItem}>
+                    <Ionicons name="water" size={30} color="#839eff" />
+                    <Text style={styles.infoText}>Humedad: {humedad}%</Text>
+                  </View>
+                </View>
+
+                <TouchableOpacity
+                  style={styles.card}
+                  onPress={() => router.push("/saturacion")}
+                >
+                  <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
+                    <FontAwesome5
+                      style={{ marginRight: 10 }}
+                      name="lungs"
+                      size={30}
+                      color="#839eff"
+                    />
+                    <Text style={styles.cardTitle}>Oxigenación SpO2</Text>
+                  </View>
+                  <Ionicons
+                    name="chevron-forward"
+                    size={30}
+                    color="#839eff"
+                    style={styles.arrowIcon}
+                  />
+                  <Text style={styles.cardText}>Oxigenación SpO2: {saturacion}%</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.card}
+                  onPress={() => router.push("/frecuencia")}
+                >
+                  <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
+                    <Ionicons
+                      style={{ marginRight: 5 }}
+                      name="heart-half"
+                      size={30}
+                      color="#839eff"
+                    />
+                    <Text style={styles.cardTitle}>Frecuencia cardiaca</Text>
+                  </View>
+                  <Ionicons
+                    name="chevron-forward"
+                    size={24}
+                    color="#839eff"
+                    style={styles.arrowIcon}
+                  />
+                  <Text style={styles.cardText}>
+                    Frecuencia cardiaca: {frecuencia} ppm
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.addButton}
+                  onPress={() => setModalVisible(true)}
+                >
+                  <Text style={styles.addButtonText}>Agregar Nota</Text>
+                </TouchableOpacity>
+              </>
+            }
+            renderItem={renderNota}
+            ListEmptyComponent={
+              <Text style={styles.emptyText}>No hay notas aún.</Text>
+            }
+          />
+
+          <Modal
+            visible={modalVisible}
+            animationType="slide"
+            transparent={true}
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Escribe tu nota</Text>
+                <TextInput
+                  value={nota}
+                  onChangeText={setNota}
+                  style={styles.modalInput}
+                  multiline
+                  placeholder="Escribe aquí tu nota"
+                />
+                <View style={styles.modalButtons}>
+                  <Button
+                    title="Cancelar"
+                    color="#61678B"
+                    onPress={() => setModalVisible(false)}
+                  />
+                  <Button title="Guardar" color="#61678B" onPress={agregarNota} />
+                </View>
               </View>
             </View>
-
-            <TouchableOpacity
-              style={styles.card}
-              onPress={() => router.push("/saturacion")}
-            >
-              <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
-                <FontAwesome5
-                  style={{ marginRight: 10 }}
-                  name="lungs"
-                  size={30}
-                  color="#839eff"
-                />
-                <Text style={styles.cardTitle}>Oxigenación SpO2</Text>
-              </View>
-              <Ionicons
-                name="chevron-forward"
-                size={30}
-                color="#839eff"
-                style={styles.arrowIcon}
-              />
-              <Text style={styles.cardText}>Oxigenación SpO2: {saturacion}%</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.card}
-              onPress={() => router.push("/frecuencia")}
-            >
-              <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
-                <Ionicons
-                  style={{ marginRight: 5 }}
-                  name="heart-half"
-                  size={30}
-                  color="#839eff"
-                />
-                <Text style={styles.cardTitle}>Frecuencia cardiaca</Text>
-              </View>
-              <Ionicons
-                name="chevron-forward"
-                size={24}
-                color="#839eff"
-                style={styles.arrowIcon}
-              />
-              <Text style={styles.cardText}>
-                Frecuencia cardiaca: {frecuencia} ppm
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.addButton}
-              onPress={() => setModalVisible(true)}
-            >
-              <Text style={styles.addButtonText}>Agregar Nota</Text>
-            </TouchableOpacity>
-          </>
-        }
-        renderItem={renderNota}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>No hay notas aún.</Text>
-        }
-      />
-
-      <Modal
-        visible={modalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Escribe tu nota</Text>
-            <TextInput
-              value={nota}
-              onChangeText={setNota}
-              style={styles.modalInput}
-              multiline
-              placeholder="Escribe aquí tu nota"
-            />
-            <View style={styles.modalButtons}>
-              <Button
-                title="Cancelar"
-                color="#61678B"
-                onPress={() => setModalVisible(false)}
-              />
-              <Button title="Guardar" color="#61678B" onPress={agregarNota} />
-            </View>
-          </View>
+          </Modal>
         </View>
-      </Modal>
-    </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
