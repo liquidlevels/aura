@@ -4,9 +4,10 @@ import { LineChart } from 'react-native-chart-kit';
 import moment from 'moment';
 import Slider from '@react-native-community/slider';
 import { Button, Icon } from 'react-native-elements';
-import { GestureHandlerRootView, PinchGestureHandler, State } from 'react-native-gesture-handler';
+import {   GestureHandlerRootView, PinchGestureHandler, State } from 'react-native-gesture-handler';
 
 import axios from 'axios';
+import API_URL from '@/apiConfig';
 const screenWidth = Dimensions.get('window').width;
 
 interface FrequencyData {
@@ -61,7 +62,7 @@ const FrequencyScreen = () => {
 
 
   // Función para filtrar los datos recibidos de la API por frecuencia cardíaca y fecha
-  const filterDataFromApi = (data, filterCriteria) => {
+  const filterDataFromApi = (data: any[], filterCriteria: { heartRate: any; date: any; }) => {
     return data
       .filter(item => {
         // Filtrar por frecuencia cardíaca, si se especifica
@@ -87,10 +88,10 @@ const FrequencyScreen = () => {
   };
   
   // Función para obtener los datos de la API y filtrarlos
-  const fetchFilteredData = async (filterCriteria) => {
+  const fetchFilteredData = async (filterCriteria: { heartRate: any; date: any; }) => {
     try {
       // Realiza la solicitud GET a la API
-      const response = await axios.get('`${API_URL}/sensors/dht22`'); // Reemplaza con la URL real de tu API
+      const response = await axios.get( `${API_URL}/sensors/max30100`); // Reemplaza con la URL real de tu API
   
       // Filtra los datos con base en los criterios
       const filteredData = filterDataFromApi(response.data, filterCriteria);
@@ -110,7 +111,7 @@ const FrequencyScreen = () => {
   
   // Llamada a la función para obtener y filtrar los datos
   fetchFilteredData(criteria);
-  const handlePinchGesture = (event) => {
+  const handlePinchGesture = (event: { nativeEvent: { state: number; scale: any; }; }) => {
     if (event.nativeEvent.state === State.END) {
       const zoom = event.nativeEvent.scale;
       setZoomLevel(Math.min(Math.max(zoom, minZoom), maxZoom)); // Limitar el zoom al rango permitido
@@ -118,7 +119,7 @@ const FrequencyScreen = () => {
   };
 
   // Función para manejar el zoom
-  const handleZoomChange = (value) => {
+  const handleZoomChange = (value: React.SetStateAction<number>) => {
     setZoomLevel(value);
   };
   const toggleSliderVisibility = () => {
@@ -214,7 +215,7 @@ const FrequencyScreen = () => {
               style={styles.chart} />
               </View>
               </PinchGestureHandler>
-              </ScrollView></GestureHandlerRootView>)};
+              </ScrollView></GestureHandlerRootView>
 
       <View style={{ padding: 20 }}>
         {/* Botón para mostrar/ocultoar el slider */}

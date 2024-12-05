@@ -3,7 +3,7 @@ import * as React from "react";
 import { View, Text, TextInput, Modal, Button, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, Alert } from "react-native";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { StyleSheet } from "react-native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactNode } from "react";
 import { router } from "expo-router";
 import axios from "axios"; // Asegúrate de tener axios instalado
 import API_URL from "@/apiConfig";
@@ -14,8 +14,12 @@ type User = {
 };
 
 type Nota = {
+  note: ReactNode;
+  date: any;
+  hour: any;
   nota: string;
   fecha: string;
+  
 };
 
 const Inicio = () => {
@@ -25,37 +29,45 @@ const Inicio = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [saturacion, setSaturacion] = useState(Math.floor(Math.random() * (100 - 90 + 1)) + 90);
   const [frecuencia, setFrecuencia] = useState(Math.floor(Math.random() * (100 - 60 + 1)) + 60);
-  const [temperatura, setTemperatura] = useState<number | null>(null);
-  const [humedad, setHumedad] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const [temperatura, setTemperatura] = useState(null);
+  const [humedad, setHumedad] = useState(null);
+  const [error, setError] = useState<string | null>(null); // Definir el estado de errorr
+
 
   useEffect(() => {
     // Obtener datos de temperatura y humedad
     const fetchTemperatura = async () => {
       try {
-        const response = await axios.get(`${API_URL}/sensors/dht22`);
-        setTemperatura(response.data.value[0]);
-        setHumedad(response.data.value[1]);
+        const response = await axios.get(`${API_URL}/realtime/dht22`);
+        setTemperatura(response.data.temperature); // Accede directamente a 'temperature'
+        setHumedad(response.data.humidity); // Accede directamente a 'humidity'
       } catch (error) {
+        setError("Error al obtener datos de temperatura y humedad");
         console.error("Error al obtener datos de temperatura y humedad:", error);
+      } finally {
+        setLoading(false); // Marca como cargado
       }
+
     };
 
     // Obtener notas de la API
     const fetchNotas = async () => {
       try {
-        const response = await axios.get(`${API_URL}/notes`); 
+        const response = await axios.get(`${API_URL}/notes`);
         setNotas(response.data);
       } catch (error) {
         console.error("Error al obtener las notas:", error);
       }
     };
 
-    // Intervalo para actualización en tiempo real
-    const interval = setInterval(() => {
-      setSaturacion(Math.floor(Math.random() * (100 - 90 + 1)) + 90);
-      setFrecuencia(Math.floor(Math.random() * (100 - 60 + 1)) + 60);
-    }, 5000);
+    // // Intervalo para actualización en tiempo real
+    // const interval = setInterval(() => {
+    //   setSaturacion(Math.floor(Math.random() * (100 - 90 + 1)) + 90);
+    //   setFrecuencia(Math.floor(Math.random() * (100 - 60 + 1)) + 60);
+    // }, 5000);
 
+    // Llamadas iniciales a las funciones
     fetchTemperatura();
     fetchNotas();
 
@@ -64,47 +76,87 @@ const Inicio = () => {
     };
   }, []);
 
-  // Método POST para agregar una nota
-  const agregarNota = async () => {
-    if (nota.trim() === "") {
-      Alert.alert("Error", "Por favor ingresa una nota válida.");
-      return;
-    }
-
-    if (!user?.id) {
-      Alert.alert("Error", "No se ha encontrado un usuario válido.");
-      return;
-    }
-
+  const fetchSaturacion = async () => {
     try {
-      const response = await axios.post(`${API_URL}/notes`, {
-        nota,
-        patient_id: user.id, // Asegúrate de que `user.id` sea válido
-      });
-
-      if (response.status === 200) {
-        Alert.alert("Éxito", "Nota agregada exitosamente.");
-        setNotas((prevNotas) => [
-          ...prevNotas,
-          { nota, fecha: new Date().toLocaleString() }, // Usando la fecha local para visualización
-        ]);
-        setNota(""); // Limpiar el campo de la nota
-        setModalVisible(false); // Cerrar el modal
-      } else {
-        Alert.alert("Error", "Hubo un problema al agregar la nota.");
-      }
+      const response = await axios.get(`${API_URL}/realtime/max30100`);
+      setSaturacion(response.data.blood_oxygen_saturation); // Accede al campo saturacion
     } catch (error) {
-      console.error("Error al agregar la nota:", error);
-      Alert.alert("Error", "Ocurrió un error al agregar la nota.");
+      setError("Error al obtener los datos de saturación");
+      console.error("Error al obtener los datos de saturación:", error);
+    }
+  };
+  
+  const fetchFrecuencia = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/realtime/max30100`);
+      setFrecuencia(response.data.heart_rate); // Accede al campo frecuencia
+    } catch (error) {
+      setError("Error al obtener los datos de frecuencia");
+      console.error("Error al obtener los datos de frecuencia:", error);
     }
   };
 
+// Método POST para agregar una nota
+const agregarNota = async () => {
+  if (nota.trim() === "") {
+    Alert.alert("Error", "Por favor ingresa una nota válida.");
+    return;
+  }
+
+  // Obtener la fecha actual
+  const fecha = new Date().toLocaleDateString(); 
+  try {
+    const response = await axios.post(`${API_URL}/notes`, {
+      note: nota,        // Enviar la nota escrita
+      patient_id: 1,     // ID fijo para el paciente
+    });
+
+    if (response.status === 200) {
+      Alert.alert("Éxito", "Nota agregada exitosamente.");
+      setNotas((prevNotas) => [
+        ...prevNotas,
+        { nota, fecha }, // Agregar al estado local con fecha y nota
+      ]);
+      setNota(""); // Limpiar el campo de la nota
+      setModalVisible(false); // Cerrar el modal
+    } else {
+      Alert.alert("Error", "Hubo un problema al agregar la nota.");
+    }
+  } catch (error) {
+    console.error("Error al agregar la nota:", error);
+    Alert.alert("Error", "Ocurrió un error al agregar la nota.");
+  }
+};
+
+
+
+  // Método para obtener las notas
+  const obtenerNotas = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/notes/1`);
+      if (response.status === 200) {
+        setNotas(response.data); // Asigna las notas al estado
+      } else {
+        Alert.alert("Error", "No se pudieron obtener las notas.");
+      }
+    } catch (error) {
+      console.error("Error al obtener las notas:", error);
+      Alert.alert("Error", "Ocurrió un error al obtener las notas.");
+    }
+  };
+  useEffect(() => {
+    obtenerNotas(); // Llama a obtenerNotas al cargar el componente
+  }, []);
+
+
+  // Renderización de cada nota
   const renderNota = ({ item }: { item: Nota }) => (
     <View style={styles.note}>
-      <Text style={styles.noteText}>{item.nota}</Text>
-      <Text style={styles.noteDate}>{item.fecha}</Text>
+      <Text style={styles.noteText}>{item.note}</Text>
+      <Text style={styles.noteDate}>{`${item.date} ${item.hour}`}</Text>
     </View>
   );
+
 
   return (
     <KeyboardAvoidingView
@@ -158,7 +210,7 @@ const Inicio = () => {
                     color="#839eff"
                     style={styles.arrowIcon}
                   />
-                  <Text style={styles.cardText}>Oxigenación SpO2: {saturacion}%</Text>
+                  <Text style={styles.cardText}>Oxigenación SpO2: {setSaturacion}%</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -181,7 +233,7 @@ const Inicio = () => {
                     style={styles.arrowIcon}
                   />
                   <Text style={styles.cardText}>
-                    Frecuencia cardiaca: {frecuencia} ppm
+                    Frecuencia cardiaca: {setFrecuencia} ppm
                   </Text>
                 </TouchableOpacity>
 
@@ -194,6 +246,7 @@ const Inicio = () => {
               </>
             }
             renderItem={renderNota}
+            
             ListEmptyComponent={
               <Text style={styles.emptyText}>No hay notas aún.</Text>
             }
