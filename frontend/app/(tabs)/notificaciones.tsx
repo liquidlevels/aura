@@ -56,7 +56,7 @@ const Notificaciones = () => {
     fetchNotifications();
 
     // intervalo para obtener nuevas notificaciones
-    const interval = setInterval(fetchNotifications, 60000); // Cada minuto
+    const interval = setInterval(fetchNotifications, 600000); // Cada minuto
 
     return () => clearInterval(interval);
   }, [notificaciones]);

@@ -4,3 +4,17 @@
 
 expo-env.d.ts
 # @end expo-cli
+# Ignorar dependencias de Node.js
+node_modules/
+
+# Ignorar el caché de Expo
+.expo/
+
+# Ignorar el archivo de bloqueo de npm
+package-lock.json
+
+# Otros archivos innecesarios
+dist/
+npm-debug.*
+.DS_Store
+
