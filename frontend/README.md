@@ -2,20 +2,22 @@ Este es un proyecto de [Expo](https://expo.dev) creado con [`create-expo-app`](h
 
 ## Cómo empezar
 
-1. Asegúrate de tener Node instalado.
+1. Asegúrate estar dentro de la carpeta de frontend (aura/frontend)
+
+2. Asegúrate de tener Node instalado.
 
     El proyecto se ha ejecutado utilizando [Node](https://nodejs.org/en) desde la versión 18.17.1 hasta la 22.11.0.
 
 > [!TIP]
 Para instalar y gestionar Node, se recomienda usar [nvm](https://github.com/nvm-sh/nvm).
 
-2. Instala las dependencias
+3. Instala las dependencias
 
    ```bash
    npm install
    ```
 
-3. Ejecuta la app
+4. Ejecuta la app
 
    ```bash
     npx expo start
