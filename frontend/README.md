@@ -2,11 +2,11 @@ Este es un proyecto de [Expo](https://expo.dev) creado con [`create-expo-app`](h
 
 ## Cómo empezar
 
-1. Asegúrate estar dentro de la carpeta de frontend (aura/frontend)
+1. Asegúrate estar dentro de la carpeta frontend (aura/frontend)
 
 2. Asegúrate de tener Node instalado.
 
-    El proyecto se ha ejecutado utilizando [Node](https://nodejs.org/en) desde la versión 18.17.1 hasta la 22.11.0.
+    El proyecto se ha ejecutado correctamente utilizando [Node](https://nodejs.org/en) desde la versión 18.17.1 hasta la 22.12.0.
 
 > [!TIP]
 Para instalar y gestionar Node, se recomienda usar [nvm](https://github.com/nvm-sh/nvm).
@@ -40,3 +40,7 @@ Para abrir el proyecto en Expo Go desde un dispositivo móvil, asegúrate de que
 >- Windows 10, 11
 >- MacOS 15.1
 
+>[!NOTE]
+>En Windows puede ser que correr scripts no esté habilitado. En ese caso se puede abrir Powershell como administrador y correr
+>
+>[`Set-ExecutionPolicy -ExecutionPolicy Unrestricted`](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.4)
