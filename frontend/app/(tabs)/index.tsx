@@ -3,7 +3,7 @@ import * as React from "react";
 import { View, Text, TextInput, Modal, Button, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, Alert } from "react-native";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { StyleSheet } from "react-native";
-import { useState, useEffect, ReactNode } from "react";
+import { useState, useEffect, ReactNode, useRef } from "react";
 import { router } from "expo-router";
 import axios from "axios"; // Asegúrate de tener axios instalado
 import API_URL from "@/apiConfig";
@@ -27,12 +27,13 @@ const Inicio = () => {
   const [nota, setNota] = useState("");
   const [notas, setNotas] = useState<Nota[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [saturacion, setSaturacion] = useState(Math.floor(Math.random() * (100 - 90 + 1)) + 90);
-  const [frecuencia, setFrecuencia] = useState(Math.floor(Math.random() * (100 - 60 + 1)) + 60);
+  const [saturacion, setSaturacion] = useState(null);
+  const [frecuencia, setFrecuencia] = useState(null);
   const [loading, setLoading] = useState(true); // Estado de carga
   const [temperatura, setTemperatura] = useState(null);
   const [humedad, setHumedad] = useState(null);
   const [error, setError] = useState<string | null>(null); // Definir el estado de errorr
+  const intervalRef = useRef(null);
 
 
   useEffect(() => {
@@ -61,15 +62,17 @@ const Inicio = () => {
       }
     };
 
-    // // Intervalo para actualización en tiempo real
-    // const interval = setInterval(() => {
-    //   setSaturacion(Math.floor(Math.random() * (100 - 90 + 1)) + 90);
-    //   setFrecuencia(Math.floor(Math.random() * (100 - 60 + 1)) + 60);
-    // }, 5000);
+    // Intervalo para actualización en tiempo real
+    const interval = setInterval(() => {
+      setSaturacion(Math.floor(Math.random() * (100 - 90 + 1)) + 90);
+      setFrecuencia(Math.floor(Math.random() * (100 - 60 + 1)) + 60);
+    }, 5000);
 
     // Llamadas iniciales a las funciones
     fetchTemperatura();
     fetchNotas();
+    fetchSaturacion();
+    fetchFrecuencia();
 
     return () => {
       clearInterval(interval);
@@ -78,8 +81,9 @@ const Inicio = () => {
 
   const fetchSaturacion = async () => {
     try {
-      const response = await axios.get(`${API_URL}/realtime/max30100`);
-      setSaturacion(response.data.blood_oxygen_saturation); // Accede al campo saturacion
+     const response = await axios.get(`${API_URL}/realtime/max30100`);
+      console.log("Saturación obtenida:", response.data.blood_oxygen_saturation);
+      setSaturacion(response.data.blood_oxygen_saturation);
     } catch (error) {
       setError("Error al obtener los datos de saturación");
       console.error("Error al obtener los datos de saturación:", error);
@@ -89,7 +93,8 @@ const Inicio = () => {
   const fetchFrecuencia = async () => {
     try {
       const response = await axios.get(`${API_URL}/realtime/max30100`);
-      setFrecuencia(response.data.heart_rate); // Accede al campo frecuencia
+      console.log("Frecuencia obtenida:", response.data.heart_rate);
+      setFrecuencia(response.data.heart_rate);
     } catch (error) {
       setError("Error al obtener los datos de frecuencia");
       console.error("Error al obtener los datos de frecuencia:", error);
@@ -170,7 +175,7 @@ const agregarNota = async () => {
             keyExtractor={(item, index) => index.toString()}
             ListHeaderComponent={
               <>
-                <Text style={styles.title}>Bienvenido, {user} ✌🏻👩🏻‍⚕️</Text>
+                <Text style={styles.title}>Bienvenido,  ✌🏻👩🏻‍⚕️</Text>
 
                 <TouchableOpacity
                   style={styles.iconContainer}
@@ -210,7 +215,7 @@ const agregarNota = async () => {
                     color="#839eff"
                     style={styles.arrowIcon}
                   />
-                  <Text style={styles.cardText}>Oxigenación SpO2: {setSaturacion}%</Text>
+                  <Text style={styles.cardText}>Oxigenación SpO2: {saturacion}%</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -233,7 +238,7 @@ const agregarNota = async () => {
                     style={styles.arrowIcon}
                   />
                   <Text style={styles.cardText}>
-                    Frecuencia cardiaca: {setFrecuencia} ppm
+                    Frecuencia cardiaca: {frecuencia} ppm
                   </Text>
                 </TouchableOpacity>
 
