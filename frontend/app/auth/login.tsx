@@ -14,17 +14,19 @@ import {
   KeyboardAvoidingView,
   ScrollView,
 } from "react-native";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 import React from "react";
 import SVGcurva from "../components/SVGcurva";
+import axios from "axios";
+import API_URL from "@/apiConfig";
 
 export default function Login() {
   const { signIn } = useSession();
   const [username, setUsername] = useState("");
   const [userLastName, setUserLastName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     const sanitizedPhone = phoneNumber.trim();
 
     if (sanitizedPhone.length !== 10 || !/^\d+$/.test(sanitizedPhone)) {
@@ -39,14 +41,45 @@ export default function Login() {
       return;
     }
 
-    /*signIn(username, userLastName, phoneNumber);
-    if (username.trim() === "" && userLastName.trim() === "") {
-      Alert.alert("Error", "Por favor ingresa un nombre de usuario válido.");
-      return;
-    }*/
+    setLoading(true);
+    try {
+      const response = await axios.post(`${API_URL}auth/login`, {
+        phoneNumber: sanitizedPhone,
+      });
 
-    signIn(username, userLastName, phoneNumber);
-    router.push("/auth/validation");
+      if (response.data.message) {
+        //const { username, userLastName } = response.data.user;
+
+        //signIn(username, userLastName, sanitizedPhone);
+
+        router.push("/auth/validation");
+      } else {
+        if (Platform.OS === "web") {
+          alert("Error: " + response.data.message);
+        } else {
+          Alert.alert("Error", response.data.message);
+        }
+      }
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        const errorMessage = error.response.data?.message;
+
+        if (Platform.OS === "web") {
+          alert("Error: " + errorMessage);
+        } else {
+          Alert.alert("Error", errorMessage);
+        }
+      } else {
+        if (Platform.OS === "web") {
+          alert("Error: No se pudo conectar con el servidor.");
+        } else {
+          Alert.alert("Error", "No se pudo conectar con el servidor.");
+        }
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -55,7 +88,7 @@ export default function Login() {
         <SVGcurva />
         <Text style={styles.login}>Iniciar sesión</Text>
         <Text style={styles.leyenda}>
-          Introduce tu número de teléfono con el que te haz registrado y te
+          Introduce tu número de teléfono con el que te has registrado y te
           enviaremos un código para iniciar sesión.
         </Text>
         <Text style={styles.subtittle}> Número telefónico*</Text>
@@ -84,8 +117,14 @@ export default function Login() {
             }}
           />
         </KeyboardAvoidingView>
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Ingresar</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleLogin}
+          disabled={loading}
+        >
+          <Text style={styles.buttonText}>
+            {loading ? "Cargando... " : "Ingresar"}
+          </Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

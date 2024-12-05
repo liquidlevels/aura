@@ -42,8 +42,6 @@ export default function AjustesScreen() {
       </TouchableOpacity>
 
       <View>
-        <Text>Usuario {user} </Text>
-        <Text>Cerrar sesion</Text>
         <Button title="sign out" onPress={() => signOut()} />
       </View>
     </View>

@@ -73,7 +73,9 @@ const Inicio = () => {
         keyExtractor={(item, index) => index.toString()}
         ListHeaderComponent={
           <>
-            <Text style={styles.title}>Bienvenido, {user} ! </Text>
+            <Text style={styles.title}>
+              Bienvenido, {user ? `${user.username}` : "Invitado"} !{" "}
+            </Text>
 
             {/* Información de video */}
             <View style={styles.iconContainer}>

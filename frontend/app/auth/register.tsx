@@ -74,7 +74,7 @@ export default function Register() {
         username: cleanedUsername,
         userLastName,
       }); // API para registrar al usuario (temporal)*/
-      const response = await axios.post(`${API_URL}keepers`, {
+      const response = await axios.post(`${API_URL}auth/register`, {
         username: cleanedUsername,
         userLastName: cleanedLastName,
         phoneNumber,
@@ -161,7 +161,7 @@ export default function Register() {
             placeholder=""
             value={phoneNumber}
             onChangeText={setPhoneNumber}
-            keyboardType="phone-pad"
+            keyboardType="numeric"
             style={{
               borderWidth: 1,
               padding: 10,
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: "1%",
     width: "80%",
-    marginVertical: "4%",
+    marginVertical: "2%",
   },
   checkbox: {
     width: 15,
@@ -295,12 +295,12 @@ const styles = StyleSheet.create({
     //flex: 1,
     //backgroundColor: "red",
     fontSize: 12,
+    height: "150%",
     //flexDirection: "column",
     //justifyContent: "flex-end",
     //alignItems: "flex-end",
-    width: "3000%",
+    width: "2300%",
     marginLeft: 20,
-    //height: "300%",
   },
 
   button_register: {

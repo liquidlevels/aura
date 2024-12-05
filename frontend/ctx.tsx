@@ -1,9 +1,14 @@
 import { createContext, ReactNode, useContext, useState } from "react";
 import * as React from "react";
 
+interface User {
+  username: string;
+  userLastName: string;
+  phoneNumber: string;
+}
 interface SessionContextProps {
   session: boolean;
-  user: string | null;
+  user: User | null;
   signIn: (username: string, userLastName: string, phoneNumber: string) => void;
   signOut: () => void;
 }
@@ -18,7 +23,7 @@ interface SessionProviderProps {
 
 export const SessionProvider = ({ children }: SessionProviderProps) => {
   const [session, setSession] = useState(false);
-  const [user, setUser] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   const signIn = (
     username: string,
@@ -26,9 +31,8 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
     phoneNumber: string
   ) => {
     setSession(true);
-    setUser(username);
-    setUser(userLastName);
-    setUser(phoneNumber);
+    setSession(true);
+    setUser({ username, userLastName, phoneNumber });
   };
 
   const signOut = () => {
@@ -43,10 +47,12 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   );
 };
 
-export const useSession = () => {
+export const useSession = (): SessionContextProps => {
   const context = useContext(SessionContext);
   if (!context) {
-    throw new Error("useSession must be used within a SessionProvider");
+    throw new Error(
+      "useSession debe ser utilizado dentro de un SessionProvider"
+    );
   }
   return context;
 };

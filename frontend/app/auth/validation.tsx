@@ -13,36 +13,64 @@ import {
   Platform,
 } from "react-native";
 import React from "react";
+import axios from "axios";
+import API_URL from "@/apiConfig";
+import { AxiosError } from "axios";
 
 const { height } = Dimensions.get("window");
 
 export default function Validation() {
   const { signIn } = useSession(); // para completar la sesion
   const [code, setCode] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleValidation = async () => {
-    if (code === "123456") {
-      try {
+    if (code.trim().length !== 6 || !/^\d+$/.test(code)) {
+      if (Platform.OS === "web") {
+        alert("Por favor ingresa un código válido de 6 dígitos.");
+      } else {
+        Alert.alert(
+          "Error",
+          "Por favor ingresa un código válido de 6 dígitos."
+        );
+      }
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await axios.post(`${API_URL}auth/validate`, {
+        code: code.trim(),
+      });
+
+      if (response.status === 200 || response.status === 201) {
         if (Platform.OS === "web") {
           alert("Verificación completada.");
         } else {
           Alert.alert("Éxito", "Verificación completada.");
         }
+        const { username, userLastName, phoneNumber } = response.data.user; //establecer datos del usuario en el contexto
+        signIn(username, userLastName, phoneNumber);
 
-        router.replace("/");
-      } catch (error) {
-        if (Platform.OS === "web") {
-          alert("Error en la verificación.");
-        } else {
-          Alert.alert("Error", "Hubo un problema al autenticar.");
-        }
-      }
-    } else {
-      if (Platform.OS === "web") {
-        alert("Código incorrecto.");
+        router.replace("/"); //pantalla de inicio
       } else {
-        Alert.alert("Error", "Código incorrecto.");
+        throw new Error(
+          response.data.message ||
+            `Error inesperado. Código de estado: ${response.status}`
+        );
       }
+    } catch (err) {
+      const error = err as any;
+      const errorMessage = error.response?.data?.message;
+
+      if (Platform.OS === "web") {
+        alert(`Error: ${errorMessage}`);
+      } else {
+        Alert.alert("Error", errorMessage);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,7 +107,9 @@ export default function Validation() {
       />
 
       <TouchableOpacity style={styles.button} onPress={handleValidation}>
-        <Text style={styles.text_button}>Validar</Text>
+        <Text style={styles.text_button}>
+          {loading ? "Validando..." : "Validar"}
+        </Text>
       </TouchableOpacity>
     </View>
   );
