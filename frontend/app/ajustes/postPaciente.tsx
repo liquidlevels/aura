@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Text,
   TextInput,
@@ -11,29 +12,28 @@ import {
   useColorScheme,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { useEffect, useState } from "react";
-import React from "react";
+import axios from "axios";
+import API_URL from "@/apiConfig";
 
-// Define types for the patient's information
 type PatientInfo = {
+  name: string;
+  lastname: string;
+  dob: string;
+  diseases: string[];
   allergies: string[];
   blood_type: string;
-  diseases: string[];
-  dob: string; // dob as a string in DD/MM/YYYY format
-  id: number;
-  lastname: string;
-  name: string;
+  keeper_id: number;
 };
 
-export default function InfoPacienteScreen() {
+export default function PostPatientInfoScreen() {
   const [patientInfo, setPatientInfo] = useState<PatientInfo>({
-    allergies: ["Agua", "Penicilina"],
-    blood_type: "AB+",
-    diseases: ["Diabetes", "Hipertensión"],
-    dob: "15/06/1985", // dob as a string
-    id: 1,
-    lastname: "Pérez",
-    name: "Juan",
+    name: "",
+    lastname: "",
+    dob: "",
+    diseases: [],
+    allergies: [],
+    blood_type: "",
+    keeper_id: 1,
   });
 
   const colorScheme = useColorScheme();
@@ -44,37 +44,27 @@ export default function InfoPacienteScreen() {
     color: isDarkMode ? "#fff" : "#000",
   };
 
-  // Simulating reading from the database
-  useEffect(() => {
-    const fetchPatientInfo = async () => {
-      const dataFromDb = {
-        allergies: ["Agua", "Penicilina"],
-        blood_type: "AB+",
-        diseases: ["Diabetes", "Hipertensión"],
-        dob: "15/06/1985", // Date format is DD/MM/YYYY
-        id: 1,
-        lastname: "Pérez",
-        name: "Juan",
-      };
+  const handleSave = async () => {
+    try {
+        const payload = {
+            name: patientInfo.name,
+            lastname: patientInfo.lastname,
+            dob: patientInfo.dob, // asegurarse que es en formato YYYY-MM-DD
+            diseases: patientInfo.diseases,
+            allergies: patientInfo.allergies,
+            blood_type: patientInfo.blood_type,
+            keeper_id: 1, // Reemplazar con el id de cuidador de sesion
+          };
 
-      setPatientInfo(dataFromDb); // No need to parse dob
-    };
+      await axios.post(`${API_URL}/patients`, payload, {
+        headers: { "Content-Type": "application/json" },
+      });
 
-    fetchPatientInfo();
-  }, []);
-
-  // Handle save by directly using dob as a string
-  const handleSave = () => {
-    console.log("Info de paciente guardada:", patientInfo);
-    Alert.alert("Cambios guardados", "La información actualizada se guardó");
-  };
-
-  // Handle changes to the DOB input field
-  const handleInputChange = (value: string) => {
-    setPatientInfo((prev) => ({
-      ...prev,
-      dob: value, // Directly set dob as a string
-    }));
+      Alert.alert("Exito", "Paciente guardado.");
+    } catch (error) {
+      console.error("Error, paciente no guardado", error);
+      Alert.alert("Error", "Paciente no guardado");
+    }
   };
 
   return (
@@ -84,6 +74,7 @@ export default function InfoPacienteScreen() {
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.infoContainer}>
+          {/* Input fields for patient information */}
           <Text style={styles.infoText}>Nombre:</Text>
           <TextInput
             style={styles.editableInput}
@@ -92,8 +83,7 @@ export default function InfoPacienteScreen() {
               setPatientInfo((prev) => ({ ...prev, name: value }))
             }
           />
-
-          <Text style={styles.infoText}>Apellido(s):</Text>
+          <Text style={styles.infoText}>Apellido:</Text>
           <TextInput
             style={styles.editableInput}
             value={patientInfo.lastname}
@@ -101,17 +91,30 @@ export default function InfoPacienteScreen() {
               setPatientInfo((prev) => ({ ...prev, lastname: value }))
             }
           />
-
-          {/* Date of Birth as a single input field */}
-          <Text style={styles.infoText}>Fecha de Nacimiento:</Text>
+          <Text style={styles.infoText}>Fecha de Nacimiento (YYYY-MM-DD):</Text>
           <TextInput
-            style={styles.editableInput}
+            style={[styles.editableInput, { backgroundColor: pickerStyles.backgroundColor }]}
             value={patientInfo.dob}
-            onChangeText={handleInputChange}
-            placeholder="DD/MM/YYYY"
+            onChangeText={(value) =>
+              setPatientInfo((prev) => ({ ...prev, dob: value }))
+            }
+            placeholder="YYYY-MM-DD"
+            maxLength={10}
           />
 
-          <Text style={styles.infoText}>Alergias:</Text>
+{/*           <Text style={styles.infoText}>Cuidador ID:</Text>
+          <TextInput
+            style={styles.editableInput}
+            keyboardType="numeric"
+            value={patientInfo.keeper_id.toString()}
+            onChangeText={(value) =>
+              setPatientInfo((prev) => ({
+                ...prev,
+                keeper_id: parseInt(value) || 1,
+              }))
+            }
+          /> */}
+          <Text style={styles.infoText}>Alergias (separar con comas):</Text>
           <TextInput
             style={styles.editableInput}
             value={patientInfo.allergies.join(", ")}
@@ -122,8 +125,7 @@ export default function InfoPacienteScreen() {
               }))
             }
           />
-
-          <Text style={styles.infoText}>Enfermedades:</Text>
+          <Text style={styles.infoText}>Enfermedades (separar con comas):</Text>
           <TextInput
             style={styles.editableInput}
             value={patientInfo.diseases.join(", ")}
@@ -134,39 +136,21 @@ export default function InfoPacienteScreen() {
               }))
             }
           />
-
           <Text style={styles.infoText}>Tipo de Sangre:</Text>
-          <View
-            style={{
-              ...pickerStyles,
-              flex: 1,
-              borderRadius: 5,
-              overflow: "hidden",
-            }}
+          <Picker
+            selectedValue={patientInfo.blood_type}
+            onValueChange={(value) =>
+              setPatientInfo((prev) => ({ ...prev, blood_type: value }))
+            }
+            style={pickerStyles}
           >
-            <Picker
-              selectedValue={patientInfo.blood_type}
-              onValueChange={(value) =>
-                setPatientInfo((prev) => ({ ...prev, blood_type: value }))
-              }
-              style={pickerStyles}
-            >
-              {["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"].map(
-                (type) => (
-                  <Picker.Item
-                    key={type}
-                    label={type}
-                    value={type}
-                    style={{ color: pickerStyles.color }}
-                  />
-                )
-              )}
-            </Picker>
-          </View>
+            {["Selecciona tipo de sangre", "O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"].map((type) => (
+              <Picker.Item key={type} label={type} value={type} style={{ color: pickerStyles.color }} />
+            ))}
+          </Picker>
         </View>
-
         <View style={styles.buttonContainer}>
-          <Button title="Guardar cambios" onPress={handleSave} />
+          <Button title="Guardar Datos" onPress={handleSave} />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
