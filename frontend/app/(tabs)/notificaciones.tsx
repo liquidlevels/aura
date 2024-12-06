@@ -130,10 +130,8 @@ const Notificaciones = () => {
             <View style={styles.levelDetails}>
               <Text style={styles.levelText}>1. Azul: Movimiento y sonido</Text>
               <View style={styles.levelStats}>
-                <Text style={styles.levelStat}>Oxigenación: 95%-100%</Text>
-                <Text style={styles.levelStat}>
-                  Frecuencia cardiaca: 60-100 bpm
-                </Text>
+                <Text style={styles.levelStat}> </Text>
+                <Text style={styles.levelStat}></Text>
               </View>
             </View>
           </View>
@@ -151,9 +149,9 @@ const Notificaciones = () => {
                 2. Verde: Oxigenación estable, frecuencia cardiaca estable
               </Text>
               <View style={styles.levelStats}>
-                <Text style={styles.levelStat}>Oxigenación: 90%-95%</Text>
+                <Text style={styles.levelStat}>Oxigenación: 95%-100%</Text>
                 <Text style={styles.levelStat}>
-                  Frecuencia cardiaca: 60-80 bpm
+                  Frecuencia cardiaca: 51-90 bpm
                 </Text>
               </View>
             </View>
@@ -172,9 +170,9 @@ const Notificaciones = () => {
                 3. Amarillo: Oxigenación baja, frecuencia cardiaca alta
               </Text>
               <View style={styles.levelStats}>
-                <Text style={styles.levelStat}>Oxigenación: 80%-90%</Text>
+                <Text style={styles.levelStat}>Oxigenación: 91%-94%</Text>
                 <Text style={styles.levelStat}>
-                  Frecuencia cardiaca: 80-100 bpm
+                  Frecuencia cardiaca: 91-100 bpm
                 </Text>
               </View>
             </View>
@@ -193,9 +191,9 @@ const Notificaciones = () => {
                 4. Naranja: Oxigenación crítica, frecuencia cardiaca muy alta
               </Text>
               <View style={styles.levelStats}>
-                <Text style={styles.levelStat}>Oxigenación: 70%-80%</Text>
+                <Text style={styles.levelStat}>Oxigenación: 80%-90%</Text>
                 <Text style={styles.levelStat}>
-                  Frecuencia cardiaca: 100-120 bpm
+                  Frecuencia cardiaca: 101-120 bpm
                 </Text>
               </View>
             </View>
@@ -212,9 +210,9 @@ const Notificaciones = () => {
             <View style={styles.levelDetails}>
               <Text style={styles.levelText}>5. Rojo: Emergencia crítica</Text>
               <View style={styles.levelStats}>
-                <Text style={styles.levelStat}>Oxigenación: menor a 70%</Text>
+                <Text style={styles.levelStat}>Oxigenación: menor a 79%</Text>
                 <Text style={styles.levelStat}>
-                  Frecuencia cardiaca: mayor a 120 bpm
+                  Frecuencia cardiaca: menor a 50 bpm o mayor a 120 bpm
                 </Text>
               </View>
             </View>

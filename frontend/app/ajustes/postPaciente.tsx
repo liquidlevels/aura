@@ -46,17 +46,17 @@ export default function PostPatientInfoScreen() {
 
   const handleSave = async () => {
     try {
-        const payload = {
-            name: patientInfo.name,
-            lastname: patientInfo.lastname,
-            dob: patientInfo.dob, // asegurarse que es en formato YYYY-MM-DD
-            diseases: patientInfo.diseases,
-            allergies: patientInfo.allergies,
-            blood_type: patientInfo.blood_type,
-            keeper_id: 1, // Reemplazar con el id de cuidador de sesion
-          };
+      const payload = {
+        name: patientInfo.name,
+        lastname: patientInfo.lastname,
+        dob: patientInfo.dob, // asegurarse que es en formato YYYY-MM-DD
+        diseases: patientInfo.diseases,
+        allergies: patientInfo.allergies,
+        blood_type: patientInfo.blood_type,
+        keeper_id: 1, // Reemplazar con el id de cuidador de sesion
+      };
 
-      await axios.post(`${API_URL}/patients`, payload, {
+      await axios.post(`${API_URL}patients`, payload, {
         headers: { "Content-Type": "application/json" },
       });
 
@@ -93,7 +93,10 @@ export default function PostPatientInfoScreen() {
           />
           <Text style={styles.infoText}>Fecha de Nacimiento (YYYY-MM-DD):</Text>
           <TextInput
-            style={[styles.editableInput, { backgroundColor: pickerStyles.backgroundColor }]}
+            style={[
+              styles.editableInput,
+              { backgroundColor: pickerStyles.backgroundColor },
+            ]}
             value={patientInfo.dob}
             onChangeText={(value) =>
               setPatientInfo((prev) => ({ ...prev, dob: value }))
@@ -102,7 +105,7 @@ export default function PostPatientInfoScreen() {
             maxLength={10}
           />
 
-{/*           <Text style={styles.infoText}>Cuidador ID:</Text>
+          {/*           <Text style={styles.infoText}>Cuidador ID:</Text>
           <TextInput
             style={styles.editableInput}
             keyboardType="numeric"
@@ -144,8 +147,23 @@ export default function PostPatientInfoScreen() {
             }
             style={pickerStyles}
           >
-            {["Selecciona tipo de sangre", "O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"].map((type) => (
-              <Picker.Item key={type} label={type} value={type} style={{ color: pickerStyles.color }} />
+            {[
+              "Selecciona tipo de sangre",
+              "O+",
+              "O-",
+              "A+",
+              "A-",
+              "B+",
+              "B-",
+              "AB+",
+              "AB-",
+            ].map((type) => (
+              <Picker.Item
+                key={type}
+                label={type}
+                value={type}
+                style={{ color: pickerStyles.color }}
+              />
             ))}
           </Picker>
         </View>

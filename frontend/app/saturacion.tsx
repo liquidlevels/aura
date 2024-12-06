@@ -3,22 +3,20 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
   ScrollView,
   Dimensions,
 } from "react-native";
 import { PieChart } from "react-native-chart-kit";
+import moment from "moment";
 
 const screenWidth = Dimensions.get("window").width;
 
-// Tipos de datos
 interface OxygenSaturationData {
-  label: string; // Etiqueta para el día, hora o mes
-  saturation: number; // Porcentaje de saturación
+  label: string;
+  saturation: number;
 }
 
-// Datos iniciales
 const dayData: OxygenSaturationData[] = [
   { label: "00:00", saturation: 95 },
   { label: "06:00", saturation: 92 },
@@ -52,7 +50,6 @@ const monthData: OxygenSaturationData[] = [
   { label: "Diciembre", saturation: 95 },
 ];
 
-// Colores para el gráfico
 const COLORS = [
   "#8A2BE2",
   "#9370DB",
@@ -64,34 +61,31 @@ const COLORS = [
 ];
 
 const OxygenSaturationScreen = () => {
-  const [data, setData] = useState(dayData); // Datos actuales según la vista
-  const [view, setView] = useState<"day" | "week" | "month">("day"); // Vista seleccionada
-  const [averageSaturation, setAverageSaturation] = useState(0); // Valor promedio de saturación
+  const [data, setData] = useState(dayData);
+  const [view, setView] = useState<"day" | "week" | "month">("day");
+  const [averageSaturation, setAverageSaturation] = useState(0);
+  const [notes, setNotes] = useState<string[]>([]);
 
-  // Calcula el promedio de saturación
   useEffect(() => {
-    const mostFrequent = Object.entries(
-      data.reduce((acc, { saturation }) => {
-        acc[saturation] = (acc[saturation] || 0) + 1;
-        return acc;
-      }, {} as Record<number, number>)
-    ).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
-    setAverageSaturation(Number(mostFrequent));
+    const totalSaturation = data.reduce(
+      (sum, { saturation }) => sum + saturation,
+      0
+    );
+    const average = totalSaturation / data.length;
+    setAverageSaturation(parseFloat(average.toFixed(2)));
   }, [data]);
 
-  // Cambia los datos según la vista
   const handleChangeView = (newView: "day" | "week" | "month") => {
     setView(newView);
     if (newView === "day") {
       setData(dayData);
     } else if (newView === "week") {
       setData(weekData);
-    } else {
+    } else if (newView === "month") {
       setData(monthData);
     }
   };
 
-  // Prepara los datos para el gráfico de pastel
   const chartData = data.map((item, index) => ({
     name: item.label,
     saturation: item.saturation,
@@ -100,33 +94,92 @@ const OxygenSaturationScreen = () => {
     legendFontSize: 12,
   }));
 
+  const fetchNotes = async () => {
+    try {
+      // Fetch real data from API
+      // const response = await axios.get(`${apiUrl}/notas`);
+      // setNotes(response.data);
+
+      // Example notes for now
+      const exampleNotes = [
+        "Recuerda revisar los niveles de saturación antes de dormir.",
+        "Verifica la calidad del aire en tu zona.",
+        "Si los niveles bajan por debajo del 90%, consulta a un médico.",
+      ];
+      setNotes(exampleNotes);
+    } catch (error) {
+      console.error("Error al obtener las notas:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
+  const renderTable = () => {
+    return (
+      <View style={styles.table}>
+        <View style={styles.tableRowHeader}>
+          <Text style={styles.tableHeader}>Hora</Text>
+          <Text style={styles.tableHeader}>Frecuencia</Text>
+        </View>
+
+        {data.map((item, index) => (
+          <View key={index} style={styles.tableRow}>
+            <Text style={styles.tableCell}>{item.label}</Text>
+            <Text style={styles.tableCell}>{item.saturation}</Text>
+            <Text style={styles.tableCell}>
+              {item.saturation >= 95 ? "Normal" : "Bajo"}
+            </Text>
+          </View>
+        ))}
+      </View>
+    );
+  };
+
+  const getCurrentDate = () => {
+    return moment().format("dddd, D [de] MMMM [de] YYYY");
+  };
+
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Saturación de Oxígeno</Text>
-
-      {/* Controles para cambiar la vista */}
       <View style={styles.viewControls}>
         <TouchableOpacity
-          style={styles.viewButton}
+          style={[styles.viewButton, view === "day" && styles.activeViewButton]}
           onPress={() => handleChangeView("day")}
         >
           <Text style={styles.viewButtonText}>Por Día</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.viewButton}
+          style={[
+            styles.viewButton,
+            view === "week" && styles.activeViewButton,
+          ]}
           onPress={() => handleChangeView("week")}
         >
           <Text style={styles.viewButtonText}>Por Semana</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.viewButton}
+          style={[
+            styles.viewButton,
+            view === "month" && styles.activeViewButton,
+          ]}
           onPress={() => handleChangeView("month")}
         >
           <Text style={styles.viewButtonText}>Por Mes</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Gráfico de pastel */}
+      <Text style={styles.title}>Saturación de Oxígeno</Text>
+
+      <Text style={[styles.dateText, { textAlign: "left", paddingLeft: 10 }]}>
+        {getCurrentDate()}
+      </Text>
+
+      <Text style={styles.normalSaturationText}>
+        Saturación normal: {averageSaturation}%
+      </Text>
+
       <View style={styles.chartContainer}>
         <PieChart
           data={chartData}
@@ -139,81 +192,174 @@ const OxygenSaturationScreen = () => {
             color: () => `rgba(0, 0, 0, 0.5)`,
           }}
         />
-        <Text style={styles.averageText}>
-          Promedio de saturación: {averageSaturation}%
+      </View>
+
+      {renderTable()}
+
+      <View style={styles.legendContainer}>
+        <Text style={styles.legendTitle}>Leyenda de Colores</Text>
+        <View style={styles.legendItem}>
+          <View style={[styles.colorBox, { backgroundColor: "#8A2BE2" }]} />
+          <Text style={styles.legendText}>Niveles óptimos (95% o más)</Text>
+        </View>
+        <View style={styles.legendItem}>
+          <View style={[styles.colorBox, { backgroundColor: "#9370DB" }]} />
+          <Text style={styles.legendText}>Niveles moderados (90%-94%)</Text>
+        </View>
+        <View style={styles.legendItem}>
+          <View style={[styles.colorBox, { backgroundColor: "#DDA0DD" }]} />
+          <Text style={styles.legendText}>
+            Niveles críticos (menos del 90%)
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoTitle}>¿Qué es la saturación de oxígeno?</Text>
+        <Text style={styles.infoText}>
+          La saturación de oxígeno en sangre es el porcentaje de oxígeno en la
+          sangre que está siendo transportado por los glóbulos rojos. Un nivel
+          bajo de saturación puede indicar que los pulmones no están funcionando
+          adecuadamente.
         </Text>
       </View>
 
-      {/* Tabla de datos */}
-      <Text style={styles.subtitle}>Datos de Saturación</Text>
-      <FlatList
-        data={data}
-        keyExtractor={(item, index) => `${item.label}-${index}`}
-        renderItem={({ item }) => (
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>{item.label}</Text>
-            <Text style={styles.tableCell}>{item.saturation}%</Text>
-          </View>
-        )}
-      />
+      <View style={styles.notesContainer}>
+        <Text style={styles.notesTitle}>Notas:</Text>
+        {notes.map((note, index) => (
+          <Text key={index} style={styles.noteText}>
+            {note}
+          </Text>
+        ))}
+      </View>
     </ScrollView>
   );
 };
 
-// Estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    marginTop: 30,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
+    backgroundColor: "#fff",
+    padding: 20,
   },
   viewControls: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 20,
+    marginBottom: 10,
   },
   viewButton: {
-    backgroundColor: "#666adf",
-    paddingVertical: 8,
-    paddingHorizontal: 20,
+    flex: 1,
+    padding: 10,
+    backgroundColor: "#61678B",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 5,
     borderRadius: 5,
+  },
+  activeViewButton: {
+    backgroundColor: "#829EFF",
   },
   viewButtonText: {
     color: "#fff",
+    fontWeight: "bold",
+  },
+  title: {
+    fontSize: 24,
+    textAlign: "left",
+    marginTop: 20,
+    fontWeight: "bold",
+  },
+  dateText: {
     fontSize: 16,
+    marginBottom: 5,
+    color: "grey",
+  },
+  normalSaturationText: {
+    fontSize: 16,
+    color: "#4caf50",
   },
   chartContainer: {
     alignItems: "center",
+    marginVertical: 20,
+  },
+  table: {
     marginBottom: 20,
   },
-  averageText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginTop: 10,
+  tableRowHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 5,
+
+    backgroundColor: "#61678B",
+    paddingVertical: 5,
   },
-  subtitle: {
-    fontSize: 20,
+  tableHeader: {
+    fontSize: 16,
     fontWeight: "bold",
-    marginTop: 20,
+    color: "white",
+    flex: 1,
     textAlign: "center",
   },
   tableRow: {
     flexDirection: "row",
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
+    justifyContent: "space-between",
+    marginVertical: 5,
+    paddingVertical: 5,
   },
   tableCell: {
+    fontSize: 16,
+    color: "#333",
     flex: 1,
     textAlign: "center",
-    padding: 8,
+  },
+
+  legendContainer: {
+    marginTop: 30,
+    marginHorizontal: 20,
+  },
+  legendTitle: {
     fontSize: 16,
+    fontWeight: "bold",
+    color: "#000",
+    marginBottom: 10,
+  },
+  legendItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 5,
+  },
+  colorBox: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
+  },
+  legendText: {
+    fontSize: 14,
+    color: "#333",
+  },
+  infoContainer: {
+    marginTop: 20,
+    marginHorizontal: 20,
+  },
+  infoTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  infoText: {
+    fontSize: 14,
+    color: "#333",
+  },
+  notesContainer: {
+    marginTop: 30,
+    marginHorizontal: 20,
+  },
+  notesTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  noteText: {
+    fontSize: 14,
+    color: "#333",
+    marginTop: 10,
   },
 });
 

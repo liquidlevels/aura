@@ -20,7 +20,7 @@ export default function GetPatientInfoScreen() {
   useEffect(() => {
     const fetchPatientInfo = async () => {
       try {
-        const response = await axios.get(`${API_URL}/patients/2`); //replace with to-be-created patient id
+        const response = await axios.get(`${API_URL}patients/2`); //replace with to-be-created patient id
         if (response.data) {
           setPatientInfo(response.data);
         } else {
@@ -52,11 +52,15 @@ export default function GetPatientInfoScreen() {
         <Text style={styles.editableText}>{patientInfo.age}</Text>
         <Text style={styles.infoText}>Alergias:</Text>
         <Text style={styles.editableText}>
-          {patientInfo.allergies.length ? patientInfo.allergies.join(", ") : "N/A"}
+          {patientInfo.allergies.length
+            ? patientInfo.allergies.join(", ")
+            : "N/A"}
         </Text>
         <Text style={styles.infoText}>Enfermedades:</Text>
         <Text style={styles.editableText}>
-          {patientInfo.diseases.length ? patientInfo.diseases.join(", ") : "N/A"}
+          {patientInfo.diseases.length
+            ? patientInfo.diseases.join(", ")
+            : "N/A"}
         </Text>
         <Text style={styles.infoText}>Tipo de Sangre:</Text>
         <Text style={styles.editableText}>{patientInfo.blood_type}</Text>

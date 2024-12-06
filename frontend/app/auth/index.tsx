@@ -43,10 +43,11 @@ export default function AuthHome() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: "#DEDEEA",
-    paddingVertical: 20,
+    //paddingVertical: 20,
   },
   image_container: {
     width: "100%",

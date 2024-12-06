@@ -1,174 +1,315 @@
 import * as React from "react";
-import { useSession } from "../../ctx";
-import { useState, useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
+  Modal,
   Button,
-  FlatList,
-  StyleSheet,
   TouchableOpacity,
+  FlatList,
   KeyboardAvoidingView,
   Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Alert,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { StyleSheet } from "react-native";
+import { useState, useEffect, ReactNode, useRef } from "react";
 import { router } from "expo-router";
+import axios from "axios"; // Asegúrate de tener axios instalado
+import API_URL from "@/apiConfig";
+import { useSession } from "@/ctx";
 
-interface Nota {
+type User = {
+  id: string; // Asegúrate de que `id` es de tipo string
+};
+
+type Nota = {
+  note?: ReactNode;
+  date?: any;
+  hour?: any;
   nota: string;
   fecha: string;
-}
+};
 
 const Inicio = () => {
   const { user } = useSession();
   const [nota, setNota] = useState("");
   const [notas, setNotas] = useState<Nota[]>([]);
-
-  const [saturacion, setSaturacion] = useState(
-    Math.floor(Math.random() * (100 - 90 + 1)) + 90
-  );
-  const [frecuencia, setFrecuencia] = useState(
-    Math.floor(Math.random() * (100 - 60 + 1)) + 60
-  );
+  const [modalVisible, setModalVisible] = useState(false);
+  const [saturacion, setSaturacion] = useState(0);
+  const [frecuencia, setFrecuencia] = useState(0);
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const [temperatura, setTemperatura] = useState(null);
+  const [humedad, setHumedad] = useState(null);
+  const [error, setError] = useState<string | null>(null); // Definir el estado de errorr
+  const intervalRef = useRef(null);
 
   useEffect(() => {
+    // Obtener datos de temperatura y humedad
+    const fetchTemperatura = async () => {
+      try {
+        const response = await axios.get(`${API_URL}realtime/dht22`);
+        setTemperatura(response.data.temperature); // Accede directamente a 'temperature'
+        setHumedad(response.data.humidity); // Accede directamente a 'humidity'
+      } catch (error) {
+        setError("Error al obtener datos de temperatura y humedad");
+        console.error(
+          "Error al obtener datos de temperatura y humedad:",
+          error
+        );
+      } finally {
+        setLoading(false); // Marca como cargado
+      }
+    };
+
+    // Obtener notas de la API
+    const fetchNotas = async () => {
+      try {
+        const response = await axios.get(`${API_URL}notes`);
+        setNotas(response.data);
+      } catch (error) {
+        console.error("Error al obtener las notas:", error);
+      }
+    };
+
+    // Intervalo para actualización en tiempo real
     const interval = setInterval(() => {
       setSaturacion(Math.floor(Math.random() * (100 - 90 + 1)) + 90);
       setFrecuencia(Math.floor(Math.random() * (100 - 60 + 1)) + 60);
     }, 5000);
 
-    return () => clearInterval(interval);
+    // Llamadas iniciales a las funciones
+    fetchTemperatura();
+    fetchNotas();
+    fetchSaturacion();
+    fetchFrecuencia();
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
-  const agregarNota = () => {
-    if (nota.trim() !== "") {
-      setNotas([{ nota, fecha: new Date().toLocaleString() }, ...notas]);
-      setNota("");
-    } else {
-      alert("Por favor ingresa una nota válida.");
+  const fetchSaturacion = async () => {
+    try {
+      const response = await axios.get(`${API_URL}realtime/max30100`);
+      console.log(
+        "Saturación obtenida:",
+        response.data.blood_oxygen_saturation
+      );
+      setSaturacion(response.data.blood_oxygen_saturation);
+    } catch (error) {
+      setError("Error al obtener los datos de saturación");
+      console.error("Error al obtener los datos de saturación:", error);
     }
   };
 
+  const fetchFrecuencia = async () => {
+    try {
+      const response = await axios.get(`${API_URL}realtime/max30100`);
+      console.log("Frecuencia obtenida:", response.data.heart_rate);
+      setFrecuencia(response.data.heart_rate);
+    } catch (error) {
+      setError("Error al obtener los datos de frecuencia");
+      console.error("Error al obtener los datos de frecuencia:", error);
+    }
+  };
+
+  // Método POST para agregar una nota
+  const agregarNota = async () => {
+    if (nota.trim() === "") {
+      Alert.alert("Error", "Por favor ingresa una nota válida.");
+      return;
+    }
+
+    // Obtener la fecha actual
+    const fecha = new Date().toLocaleDateString();
+    try {
+      const response = await axios.post(`${API_URL}notes`, {
+        note: nota, // Enviar la nota escrita
+        patient_id: 1, // ID fijo para el paciente
+      });
+
+      if (response.status === 200) {
+        Alert.alert("Éxito", "Nota agregada exitosamente.");
+        setNotas((prevNotas) => [
+          ...prevNotas,
+          { nota, fecha }, // Agregar al estado local con fecha y nota
+        ]);
+        setNota(""); // Limpiar el campo de la nota
+        setModalVisible(false); // Cerrar el modal
+      } else {
+        Alert.alert("Error", "Hubo un problema al agregar la nota.");
+      }
+    } catch (error) {
+      console.error("Error al agregar la nota:", error);
+      Alert.alert("Error", "Ocurrió un error al agregar la nota.");
+    }
+  };
+
+  // Método para obtener las notas
+  const obtenerNotas = async () => {
+    try {
+      const response = await axios.get(`${API_URL}notes/1`);
+      if (response.status === 200) {
+        setNotas(response.data); // Asigna las notas al estado
+      } else {
+        Alert.alert("Error", "No se pudieron obtener las notas.");
+      }
+    } catch (error) {
+      console.error("Error al obtener las notas:", error);
+      Alert.alert("Error", "Ocurrió un error al obtener las notas.");
+    }
+  };
+  useEffect(() => {
+    obtenerNotas(); // Llama a obtenerNotas al cargar el componente
+  }, []);
+
+  // Renderización de cada nota
   const renderNota = ({ item }: { item: Nota }) => (
     <View style={styles.note}>
-      <Text style={styles.noteText}>{item.nota}</Text>
-      <Text style={styles.noteDate}>{item.fecha}</Text>
+      <Text style={styles.noteText}>{item.note}</Text>
+      <Text style={styles.noteDate}>{`${item.date} ${item.hour}`}</Text>
     </View>
   );
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      keyboardVerticalOffset={80} // Ajusta según el diseño
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <FlatList
-        style={{
-          flex: 1,
-          padding: "2%",
-          margin: "2%",
-        }}
-        data={notas}
-        keyExtractor={(item, index) => index.toString()}
-        ListHeaderComponent={
-          <>
-            <Text style={styles.title}>
-              Bienvenido, {user ? `${user.username}` : "Invitado"} !{" "}
-            </Text>
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <View style={styles.container}>
+          <FlatList
+            data={notas}
+            keyExtractor={(item, index) => index.toString()}
+            ListHeaderComponent={
+              <>
+                <Text style={styles.title}>
+                  Bienvenido, {user ? `${user.username}` : "Invitado"} !{" "}
+                </Text>
 
-            {/* Información de video */}
-            <View style={styles.iconContainer}>
-              <Ionicons name="videocam" size={30} color="#666adf" />
-              <Text style={styles.iconText}>Video en vivo</Text>
-            </View>
+                <TouchableOpacity
+                  style={styles.iconContainer}
+                  onPress={() => router.push("/video/videoStream")}
+                >
+                  <Ionicons name="videocam" size={30} color="#839eff" />
+                  <Text style={styles.iconText}>Video en vivo</Text>
+                </TouchableOpacity>
 
-            {/* Información de temperatura y humedad */}
-            <View style={styles.infoContainer}>
-              <View style={styles.infoItem}>
-                <Ionicons name="thermometer" size={30} color="#839eff" />
-                <Text style={styles.infoText}>Temperatura: 22°C</Text>
-              </View>
-              <View style={styles.infoItem}>
-                <Ionicons name="water" size={30} color="#839eff" />
-                <Text style={styles.infoText}>Humedad: 60%</Text>
-              </View>
-            </View>
+                <View style={styles.infoContainer}>
+                  <View style={styles.infoItem}>
+                    <Ionicons name="thermometer" size={30} color="#839eff" />
+                    <Text style={styles.infoText}>
+                      Temperatura: {temperatura}°C
+                    </Text>
+                  </View>
+                  <View style={styles.infoItem}>
+                    <Ionicons name="water" size={30} color="#839eff" />
+                    <Text style={styles.infoText}>Humedad: {humedad}%</Text>
+                  </View>
+                </View>
 
-            {/* Tarjetas de saturación y frecuencia */}
-            <TouchableOpacity
-              style={styles.card}
-              onPress={() => router.push("/saturacion")}
-            >
-              <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
-                <Ionicons
-                  style={{ marginRight: 10 }}
-                  name="water"
-                  size={24}
-                  color="#a93226"
-                />
-                <Text style={styles.cardTitle}> Oxigenación SpO2</Text>
-              </View>
-              <Ionicons
-                name="chevron-forward"
-                size={24}
-                color="#E74C3C"
-                style={styles.arrowIcon}
-              />
-              <Text style={styles.cardText}>
-                Oxigenación SpO2: {saturacion}%
-              </Text>
-            </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.card}
+                  onPress={() => router.push("/saturacion")}
+                >
+                  <View
+                    style={{ flexDirection: "row", alignItems: "flex-start" }}
+                  >
+                    <FontAwesome5
+                      style={{ marginRight: 10 }}
+                      name="lungs"
+                      size={30}
+                      color="#839eff"
+                    />
+                    <Text style={styles.cardTitle}>Oxigenación SpO2</Text>
+                  </View>
+                  <Ionicons
+                    name="chevron-forward"
+                    size={30}
+                    color="#839eff"
+                    style={styles.arrowIcon}
+                  />
+                  <Text style={styles.cardText}>
+                    Oxigenación SpO2: {saturacion}%
+                  </Text>
+                </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.card}
-              onPress={() => router.push("/frecuencia")}
-            >
-              <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
-                <Ionicons
-                  style={{ marginRight: 10 }}
-                  name="fitness"
-                  size={24}
-                  color="#a93226"
-                />
-                <Text style={styles.cardTitle}> Frecuencia cardiaca</Text>
-              </View>
-              <Ionicons
-                name="chevron-forward"
-                size={24}
-                color="#E74C3C"
-                style={styles.arrowIcon}
-              />
-              <Text style={styles.cardText}>
-                Frecuencia cardiaca: {frecuencia} ppm
-              </Text>
-            </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.card}
+                  onPress={() => router.push("/frecuencia")}
+                >
+                  <View
+                    style={{ flexDirection: "row", alignItems: "flex-start" }}
+                  >
+                    <Ionicons
+                      style={{ marginRight: 5 }}
+                      name="heart-half"
+                      size={30}
+                      color="#839eff"
+                    />
+                    <Text style={styles.cardTitle}>Frecuencia cardiaca</Text>
+                  </View>
+                  <Ionicons
+                    name="chevron-forward"
+                    size={24}
+                    color="#839eff"
+                    style={styles.arrowIcon}
+                  />
+                  <Text style={styles.cardText}>
+                    Frecuencia cardiaca: {frecuencia} ppm
+                  </Text>
+                </TouchableOpacity>
 
-            {/* Campo para agregar nota */}
-            <View style={styles.notesContainer}>
-              <Text style={styles.subtitle}>Agregar Nota ✍</Text>
-              <View style={styles.inputContainer}>
+                <TouchableOpacity
+                  style={styles.addButton}
+                  onPress={() => setModalVisible(true)}
+                >
+                  <Text style={styles.addButtonText}>Agregar Nota</Text>
+                </TouchableOpacity>
+              </>
+            }
+            renderItem={renderNota}
+            ListEmptyComponent={
+              <Text style={styles.emptyText}>No hay notas aún.</Text>
+            }
+          />
+
+          <Modal
+            visible={modalVisible}
+            animationType="slide"
+            transparent={true}
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Escribe tu nota</Text>
                 <TextInput
                   value={nota}
                   onChangeText={setNota}
-                  style={styles.input}
-                  placeholder="Escribe tu nota"
-                  placeholderTextColor="#B0BEC5"
+                  style={styles.modalInput}
+                  multiline
+                  placeholder="Escribe aquí tu nota"
                 />
-                <Button
-                  title="Agregar nota"
-                  onPress={agregarNota}
-                  color="#61678B"
-                />
+                <View style={styles.modalButtons}>
+                  <Button
+                    title="Cancelar"
+                    color="#61678B"
+                    onPress={() => setModalVisible(false)}
+                  />
+                  <Button
+                    title="Guardar"
+                    color="#61678B"
+                    onPress={agregarNota}
+                  />
+                </View>
               </View>
             </View>
-          </>
-        }
-        renderItem={renderNota}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>No hay notas aún.</Text>
-        }
-      />
+          </Modal>
+        </View>
+      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 };
@@ -201,7 +342,7 @@ const styles = StyleSheet.create({
   infoContainer: {
     marginBottom: 20,
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
   },
   infoItem: {
     flexDirection: "row",
@@ -210,60 +351,54 @@ const styles = StyleSheet.create({
   infoText: {
     fontSize: 16,
     color: "#7F8C8D",
-    marginHorizontal: 10,
+    marginLeft: 5,
   },
   card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 10,
+    backgroundColor: "#fff",
     padding: 20,
-    marginBottom: 20,
+    marginBottom: 15,
+    borderRadius: 10,
+    elevation: 2,
   },
   cardTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#2C3E50",
-    marginBottom: 10,
   },
   arrowIcon: {
     position: "absolute",
-    top: 10,
-    right: 10,
+    right: 20,
+    top: 20,
   },
   cardText: {
     fontSize: 16,
     color: "#7F8C8D",
   },
-  notesContainer: {
-    marginTop: 20,
-    backgroundColor: "#FFFFFF",
+  addButton: {
+    backgroundColor: "#61678B",
+    padding: 15,
+    marginBottom: 15,
+    marginHorizontal: 20,
     borderRadius: 10,
-    padding: 20,
-  },
-  subtitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#34495E",
-    marginBottom: 15,
-  },
-  inputContainer: {
-    flexDirection: "row",
     alignItems: "center",
-    marginBottom: 15,
   },
-  input: {
-    flex: 1,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#BDC3C7",
-    borderRadius: 8,
-    marginRight: 10,
-    backgroundColor: "#F5F5F5",
+  addButtonText: {
+    fontSize: 18,
+    color: "#fff",
+  },
+  emptyText: {
+    fontSize: 18,
+    color: "#7F8C8D",
+    textAlign: "center",
+    marginTop: 20,
   },
   note: {
-    backgroundColor: "#ECF0F1",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 12,
+    backgroundColor: "#fff",
+    padding: 10,
+    marginVertical: 5,
+    marginHorizontal: 20,
+    borderRadius: 10,
+    elevation: 1,
   },
   noteText: {
     fontSize: 16,
@@ -271,14 +406,38 @@ const styles = StyleSheet.create({
   },
   noteDate: {
     fontSize: 12,
-    color: "#95A5A6",
-    marginTop: 6,
-  },
-  emptyText: {
-    textAlign: "center",
     color: "#7F8C8D",
-    fontStyle: "italic",
-    marginTop: 20,
+    marginTop: 5,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  modalInput: {
+    height: 150,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 20,
+    padding: 10,
+    fontSize: 16,
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 });
 

@@ -20,7 +20,7 @@ export default function InfoUsuarioScreen() {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await axios.get(`${API_URL}/keepers/6461463420`); //reemplazar con sesion
+        const response = await axios.get(`${API_URL}keepers/6461463420`); //reemplazar con sesion
         setUserInfo(response.data);
       } catch (error) {
         Alert.alert("Error", "Failed to load user information");
