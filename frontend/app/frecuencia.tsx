@@ -11,45 +11,50 @@ import API_URL from '@/apiConfig';
 const screenWidth = Dimensions.get('window').width;
 
 interface FrequencyData {
-  label: string;
-  frequency: number;
+  [x: string]: any;
+  date: string;
+  heart_rate: number;
+  blood_oxygen_saturation: number;
+  time: string;
+  id: number;
 }
 
-const dayData: FrequencyData[] = [
-  { label: '00:00', frequency: 75 },
-  { label: '06:00', frequency: 80 },
-  { label: '12:00', frequency: 85 },
-  { label: '18:00', frequency: 78 },
-  { label: '24:00', frequency: 76 },
-];
+// const dayData: FrequencyData[] = [
+//   { label: '00:00', frequency: 75 },
+//   { label: '06:00', frequency: 80 },
+//   { label: '12:00', frequency: 85 },
+//   { label: '18:00', frequency: 78 },
+//   { label: '24:00', frequency: 76 },
+// ];
 
-const weekData: FrequencyData[] = [
-  { label: 'Lunes', frequency: 80 },
-  { label: 'Martes', frequency: 85 },
-  { label: 'Miércoles', frequency: 82 },
-  { label: 'Jueves', frequency: 79 },
-  { label: 'Viernes', frequency: 84 },
-  { label: 'Sábado', frequency: 86 },
-  { label: 'Domingo', frequency: 81 },
-];
+// const weekData: FrequencyData[] = [
+//   { label: 'Lunes', frequency: 80 },
+//   { label: 'Martes', frequency: 85 },
+//   { label: 'Miércoles', frequency: 82 },
+//   { label: 'Jueves', frequency: 79 },
+//   { label: 'Viernes', frequency: 84 },
+//   { label: 'Sábado', frequency: 86 },
+//   { label: 'Domingo', frequency: 81 },
+// ];
 
-const monthData: FrequencyData[] = [
-  { label: 'Enero', frequency: 78 },
-  { label: 'Febrero', frequency: 80 },
-  { label: 'Marzo', frequency: 82 },
-  { label: 'Abril', frequency: 77 },
-  { label: 'Mayo', frequency: 81 },
-  { label: 'Junio', frequency: 83 },
-  { label: 'Julio', frequency: 79 },
-  { label: 'Agosto', frequency: 80 },
-  { label: 'Septiembre', frequency: 76 },
-  { label: 'Octubre', frequency: 79 },
-  { label: 'Noviembre', frequency: 80 },
-  { label: 'Diciembre', frequency: 78 },
-];
+// const monthData: FrequencyData[] = [
+//   { label: 'Enero', frequency: 78 },
+//   { label: 'Febrero', frequency: 80 },
+//   { label: 'Marzo', frequency: 82 },
+//   { label: 'Abril', frequency: 77 },
+//   { label: 'Mayo', frequency: 81 },
+//   { label: 'Junio', frequency: 83 },
+//   { label: 'Julio', frequency: 79 },
+//   { label: 'Agosto', frequency: 80 },
+//   { label: 'Septiembre', frequency: 76 },
+//   { label: 'Octubre', frequency: 79 },
+//   { label: 'Noviembre', frequency: 80 },
+//   { label: 'Diciembre', frequency: 78 },
+// ];
 
 const FrequencyScreen = () => {
-  const [data, setData] = useState(dayData);
+  const [data, setData] = useState<FrequencyData[]>([]);
+  const [filteredData, setFilteredData] = useState<FrequencyData[]>([]); // Estado para los datos filtrados
   const [view, setView] = useState<'day' | 'week' | 'month'>('day');
   const [averageFrequency, setAverageFrequency] = useState(0);
   const [date, setDate] = useState(moment().format('dddd, D [de] MMMM [de] YYYY'));
@@ -58,59 +63,86 @@ const FrequencyScreen = () => {
   const maxZoom = 5; // Nivel máximo de zoom
   const minZoom = 1; // Nivel mínimo de zoom
   const [isSliderVisible, setIsSliderVisible] = useState(false);
-
-
-
-  // Función para filtrar los datos recibidos de la API por frecuencia cardíaca y fecha
-  const filterDataFromApi = (data: any[], filterCriteria: { heartRate: any; date: any; }) => {
-    return data
-      .filter(item => {
-        // Filtrar por frecuencia cardíaca, si se especifica
-        if (filterCriteria.heartRate && item.heart_rate !== filterCriteria.heartRate) {
-          return false;
-        }
   
-        // Filtrar por fecha, si se especifica
-        if (filterCriteria.date && item.date !== filterCriteria.date) {
-          return false;
-        }
   
-        return true;
-      })
-      .map(item => {
-        // Retornar solo los campos de interés: frecuencia cardíaca, ID y fecha
-        return {
-          heart_rate: item.heart_rate,
-          id: item.id,
-          date: item.date
-        };
-      });
+ const filterDataByView = (view: 'day' | 'week' | 'month') => {
+  if (view === 'day') {
+    return data.filter((_, index) => index < 24);
+  } else if (view === 'week') {
+    return data.filter((_, index) => index < 7); 
+  } else if (view === 'month') {
+    return data; // Todo el mes
+  }
+};
+
+useEffect(() => {
+  return setFilteredData(filterDataByView(view));
+}, [view, data]);
+
+// Calcular frecuencia promedio
+useEffect(() => {
+  const totalFrequency = filteredData.reduce((sum, { frequency }) => sum + frequency, 0);
+  const average = filteredData.length ? totalFrequency / filteredData.length : 0;
+  setAverageFrequency(parseFloat(average.toFixed(2)));
+}, [filteredData]);
+
+
+ // Función para obtener los datos de la API y filtrarlos
+// Función para filtrar los datos recibidos de la API por frecuencia cardíaca y fecha
+const filterDataFromApi = (data: any[], filterCriteria: { heartRate?: number; date?: string }) => {
+  return data
+    .filter(item => {
+      // Filtrar por frecuencia cardíaca, si se especifica
+      if (filterCriteria.heartRate && item.heart_rate !== filterCriteria.heartRate) {
+        return false;
+      }
+
+      // Filtrar por fecha, si se especifica
+      if (filterCriteria.date && item.date !== filterCriteria.date) {
+        return false;
+      }
+
+      return true;
+    })
+    .map(item => {
+      // Retornar solo los campos de interés: frecuencia cardíaca, ID y fecha
+      return {
+        heart_rate: item.heart_rate,
+        id: item.id,
+        date: item.date
+      };
+    });
+};
+
+// Función para obtener los datos de la API y filtrarlos
+const fetchFilteredData = async () => {
+  // Criterios de filtrado
+  const criteria = {
+    heartRate: 88,  // Filtrar por frecuencia cardíaca
+    date: "05/12/2024"  // Filtrar por fecha
   };
-  
-  // Función para obtener los datos de la API y filtrarlos
-  const fetchFilteredData = async (filterCriteria: { heartRate: any; date: any; }) => {
-    try {
-      // Realiza la solicitud GET a la API
-      const response = await axios.get( `${API_URL}/sensors/max30100`); // Reemplaza con la URL real de tu API
-  
+
+  try {
+    // Realiza la solicitud GET a la API
+    const response = await axios.get(`${API_URL}/sensors/max30100`); // Reemplaza con la URL real de tu API
+    
+    // Verifica si la respuesta tiene datos
+    if (response.data && Array.isArray(response.data)) {
       // Filtra los datos con base en los criterios
-      const filteredData = filterDataFromApi(response.data, filterCriteria);
+      const filteredData = filterDataFromApi(response.data, criteria);
   
       // Imprime los datos filtrados
       console.log(filteredData);
-    } catch (error) {
-      console.error('Error al obtener los datos:', error);
+    } else {
+      console.error('Los datos de la API no tienen el formato esperado.');
     }
-  };
+  } catch (error) {
+    console.error('Error al obtener los datos:', error);
+  }
+};
+
+
   
-  // Criterios de filtrado
-  const criteria = {
-    heartRate: 75,  // Filtrar por frecuencia cardíaca
-    date: "26/11/2024"  // Filtrar por fecha
-  };
-  
-  // Llamada a la función para obtener y filtrar los datos
-  fetchFilteredData(criteria);
   const handlePinchGesture = (event: { nativeEvent: { state: number; scale: any; }; }) => {
     if (event.nativeEvent.state === State.END) {
       const zoom = event.nativeEvent.scale;
@@ -133,31 +165,34 @@ const FrequencyScreen = () => {
 
     setDate(moment().format('dddd, D [de] MMMM [de] YYYY'));
   }, [data]);
-
-  const handleChangeView = (newView: 'day' | 'week' | 'month') => {
-    setView(newView);
-    if (newView === 'day') {
-      setData(dayData); } else if (newView === 'week') {
-      setData(weekData);
-    } else if (newView === 'month') {
-      setData(monthData);
+  // Función para manejar la vista de datos (día, semana, mes)
+  const handleViewChange = (newView: string) => {
+    if (newView === 'día') {
+      setData(dayData); // Asume que tienes un conjunto de datos llamado dayData
+    } else if (newView === 'semana') {
+      setData(weekData); // Verifica que weekData esté definido
+    } else if (newView === 'mes') {
+      setData(monthData); // Asume que tienes un conjunto de datos llamado monthData
     }
   };
 
   const isNormalFrequency = (frequency: number) => {
     return frequency >= 60 && frequency <= 100;
   };
-
   const chartData = {
-    labels: data.slice(0, range).map(item => item.label),
+    labels: filteredData.slice(0, range).map(item => item.label),
     datasets: [
       {
-        data: data.slice(0, range).map(item => item.frequency),
+        data: filteredData.slice(0, range).map(item => item.frequency),
         strokeWidth: 2,
         color: (opacity = 1) => `rgba(128, 0, 128, ${opacity})`,
       },
     ],
   };
+  function handleChangeView(arg0: string): void {
+    throw new Error('Function not implemented.');
+  }
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.viewControls}>

@@ -27,8 +27,8 @@ const Inicio = () => {
   const [nota, setNota] = useState("");
   const [notas, setNotas] = useState<Nota[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [saturacion, setSaturacion] = useState(null);
-  const [frecuencia, setFrecuencia] = useState(null);
+  const [saturacion, setSaturacion] = useState(0);
+  const [frecuencia, setFrecuencia] = useState(0);
   const [loading, setLoading] = useState(true); // Estado de carga
   const [temperatura, setTemperatura] = useState(null);
   const [humedad, setHumedad] = useState(null);
@@ -418,4 +418,3 @@ const styles = StyleSheet.create({
 });
 
 export default Inicio;
-
