@@ -20,11 +20,9 @@ import { router } from "expo-router";
 import axios from "axios"; // Asegúrate de tener axios instalado
 import API_URL from "@/apiConfig";
 import { useSession } from "@/ctx";
-
 type User = {
   id: string; // Asegúrate de que `id` es de tipo string
 };
-
 type Nota = {
   note?: ReactNode;
   date?: any;
@@ -32,7 +30,6 @@ type Nota = {
   nota: string;
   fecha: string;
 };
-
 const Inicio = () => {
   const { user } = useSession();
   const [nota, setNota] = useState("");
@@ -45,7 +42,6 @@ const Inicio = () => {
   const [humedad, setHumedad] = useState(null);
   const [error, setError] = useState<string | null>(null); // Definir el estado de errorr
   const intervalRef = useRef(null);
-
   useEffect(() => {
     // Obtener datos de temperatura y humedad
     const fetchTemperatura = async () => {
@@ -63,7 +59,6 @@ const Inicio = () => {
         setLoading(false); // Marca como cargado
       }
     };
-
     // Obtener notas de la API
     const fetchNotas = async () => {
       try {
@@ -73,24 +68,17 @@ const Inicio = () => {
         console.error("Error al obtener las notas:", error);
       }
     };
-
-    // Intervalo para actualización en tiempo real
-    const interval = setInterval(() => {
-      setSaturacion(Math.floor(Math.random() * (100 - 90 + 1)) + 90);
-      setFrecuencia(Math.floor(Math.random() * (100 - 60 + 1)) + 60);
-    }, 5000);
-
+    // // Intervalo para actualización en tiempo real
+    // const interval = setInterval(() => {
+    //   setSaturacion(Math.floor(Math.random() * (100 - 90 + 1)) + 90);
+    //   setFrecuencia(Math.floor(Math.random() * (100 - 60 + 1)) + 60);
+    // }, 5000);
     // Llamadas iniciales a las funciones
     fetchTemperatura();
     fetchNotas();
     fetchSaturacion();
     fetchFrecuencia();
-
-    return () => {
-      clearInterval(interval);
-    };
   }, []);
-
   const fetchSaturacion = async () => {
     try {
       const response = await axios.get(`${API_URL}realtime/max30100`);
@@ -104,7 +92,6 @@ const Inicio = () => {
       console.error("Error al obtener los datos de saturación:", error);
     }
   };
-
   const fetchFrecuencia = async () => {
     try {
       const response = await axios.get(`${API_URL}realtime/max30100`);
@@ -115,14 +102,12 @@ const Inicio = () => {
       console.error("Error al obtener los datos de frecuencia:", error);
     }
   };
-
   // Método POST para agregar una nota
   const agregarNota = async () => {
     if (nota.trim() === "") {
       Alert.alert("Error", "Por favor ingresa una nota válida.");
       return;
     }
-
     // Obtener la fecha actual
     const fecha = new Date().toLocaleDateString();
     try {
@@ -130,7 +115,6 @@ const Inicio = () => {
         note: nota, // Enviar la nota escrita
         patient_id: 1, // ID fijo para el paciente
       });
-
       if (response.status === 200) {
         Alert.alert("Éxito", "Nota agregada exitosamente.");
         setNotas((prevNotas) => [
@@ -147,7 +131,6 @@ const Inicio = () => {
       Alert.alert("Error", "Ocurrió un error al agregar la nota.");
     }
   };
-
   // Método para obtener las notas
   const obtenerNotas = async () => {
     try {
@@ -164,8 +147,8 @@ const Inicio = () => {
   };
   useEffect(() => {
     obtenerNotas(); // Llama a obtenerNotas al cargar el componente
+   
   }, []);
-
   // Renderización de cada nota
   const renderNota = ({ item }: { item: Nota }) => (
     <View style={styles.note}>
@@ -173,7 +156,6 @@ const Inicio = () => {
       <Text style={styles.noteDate}>{`${item.date} ${item.hour}`}</Text>
     </View>
   );
-
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -189,7 +171,6 @@ const Inicio = () => {
                 <Text style={styles.title}>
                   Bienvenido, {user ? `${user.username}` : "Invitado"} !{" "}
                 </Text>
-
                 <TouchableOpacity
                   style={styles.iconContainer}
                   onPress={() => router.push("/video/videoStream")}
@@ -197,7 +178,6 @@ const Inicio = () => {
                   <Ionicons name="videocam" size={30} color="#839eff" />
                   <Text style={styles.iconText}>Video en vivo</Text>
                 </TouchableOpacity>
-
                 <View style={styles.infoContainer}>
                   <View style={styles.infoItem}>
                     <Ionicons name="thermometer" size={30} color="#839eff" />
@@ -210,7 +190,6 @@ const Inicio = () => {
                     <Text style={styles.infoText}>Humedad: {humedad}%</Text>
                   </View>
                 </View>
-
                 <TouchableOpacity
                   style={styles.card}
                   onPress={() => router.push("/saturacion")}
@@ -236,7 +215,6 @@ const Inicio = () => {
                     Oxigenación SpO2: {saturacion}%
                   </Text>
                 </TouchableOpacity>
-
                 <TouchableOpacity
                   style={styles.card}
                   onPress={() => router.push("/frecuencia")}
@@ -262,7 +240,6 @@ const Inicio = () => {
                     Frecuencia cardiaca: {frecuencia} ppm
                   </Text>
                 </TouchableOpacity>
-
                 <TouchableOpacity
                   style={styles.addButton}
                   onPress={() => setModalVisible(true)}
@@ -276,7 +253,6 @@ const Inicio = () => {
               <Text style={styles.emptyText}>No hay notas aún.</Text>
             }
           />
-
           <Modal
             visible={modalVisible}
             animationType="slide"
@@ -313,7 +289,6 @@ const Inicio = () => {
     </KeyboardAvoidingView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -440,5 +415,5 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
 });
-
 export default Inicio;
+

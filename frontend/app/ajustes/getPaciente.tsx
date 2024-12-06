@@ -20,7 +20,7 @@ export default function GetPatientInfoScreen() {
   useEffect(() => {
     const fetchPatientInfo = async () => {
       try {
-        const response = await axios.get(`${API_URL}patients/2`); //replace with to-be-created patient id
+        const response = await axios.get(`${API_URL}patients/3`); //replace with to-be-created patient id
         if (response.data) {
           setPatientInfo(response.data);
         } else {

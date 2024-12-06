@@ -11,7 +11,7 @@ const VideoStream: React.FC = () => {
 
   useEffect(() => {
     // Conectar al servidor Socket.IO
-    socketRef.current = io('http://192.168.100.78:8780'); // Cambia a tu IP del servidor
+    socketRef.current = io('http://192.168.0.122:8780'); // Cambia a tu IP del servidor
 
     socketRef.current.on('frame', (frame: string) => {
       setIsStreaming(true);

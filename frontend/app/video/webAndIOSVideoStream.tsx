@@ -8,7 +8,7 @@ const VideoStream: React.FC = () => {
 
   useEffect(() => {
     // Conectar al servidor Socket.IO
-    const socket = io('http://192.168.100.78:8780'); // Cambia a la dirección IP del servidor
+    const socket = io('http://192.168.0.122:8780'); // Cambia a la dirección IP del servidor
 
     // Escuchar el evento "frame" del servidor
     socket.on('frame', (frame: string) => {

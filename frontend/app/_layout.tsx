@@ -12,8 +12,8 @@ export default function RootLayout() {
   return (
     <SessionProvider>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="auth/index" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ title: "Atrás", headerShown: false }} />
+        <Stack.Screen name="auth/index" options={{ title: "Login", headerShown: false }} />
         <Stack.Screen name="auth/login" options={{ title: "Iniciar Sesión" }} />
         <Stack.Screen name="auth/register" options={{ title: "Registro" }} />
 
